@@ -15,14 +15,21 @@ Thread threadLvHandler;
 Ticker tickerStepper;
 Ticker tickerLvgl;
 
-DigitalOut	led1(LED1);
+DigitalOut	led1(LED1);                 // onboard LEDs
 DigitalOut	led2(LED2);
 Adafruit_TFTLCD_16bit_STM32 tft(NC);
 
+// global vars for stepper motor 
+
 bool motorOn = false;
 int motorSpeed = 40;
-DigitalOut motorStep(PE_5);
-DigitalOut motorDirection(PE_2);
+DigitalOut motorStep(PE_5);             // stepping pulse
+DigitalOut motorDirection(PE_2);        // stepping direction
+
+
+//
+// stepper motor control
+//
 
 void fnStepper() {
     static int stepCount = 0;
@@ -36,10 +43,20 @@ void fnStepper() {
     }
 }
 
+//
+// lv Ticker, executed in interrupt context
+//
+
 void fnLvTicker ()
 {
     lv_tick_inc(2);      /*Tell LittlevGL that 2 milliseconds were elapsed*/
 }
+
+
+//
+// lv_task_hanlder thread
+//  needs mutex to avoid hardfault!
+//
 
 void threadFnLvHandler()
 {
@@ -49,6 +66,11 @@ void threadFnLvHandler()
 		ThisThread::sleep_for(10);
 	}
 }
+
+
+//
+// IO Thread
+// control tft backlight by button K1
 
 void threadFnIO() {
     DigitalIn inButtonK1(PE_3, PullUp);
@@ -79,6 +101,11 @@ void threadFnIO() {
     }
 }
 
+//
+//  print raw and calibrated touch coordinates
+//   usess a modified lv_index_data_t, added raw coordinates
+//
+
 void testTouch() 
 {
     while(1) {
@@ -92,6 +119,24 @@ void testTouch()
 
 		ThisThread::sleep_for(100);
 	}
+}
+
+//
+//  sleep and call lvHandler cyclic
+//   sleeptime_ms: >0: sleep milliseconds, 0: sleep forever
+
+void sleepWithLvHandler(uint32_t sleepTime_ms)
+{
+    uint32_t elapsedTime = 0;
+    const uint32_t timeSlice = 5;
+
+    while (elapsedTime <= sleepTime_ms) {
+        led1 = !led1;
+        lv_task_handler();
+        ThisThread::sleep_for(timeSlice);
+        if (sleepTime_ms > 0)
+            elapsedTime += timeSlice;
+    }
 }
 
 // main() runs in its own thread in the OS
@@ -128,7 +173,7 @@ int main()
     threadIO.start(callback(threadFnIO));
     tickerStepper.attach_us(&fnStepper, 10);
     tickerLvgl.attach_us(&fnLvTicker, 2000);
-    threadLvHandler.start(callback(threadFnLvHandler));
+    //threadLvHandler.start(callback(threadFnLvHandler));
 
 	//lv_tutorial_hello_world();
     //demo_create();
@@ -136,15 +181,9 @@ int main()
     //benchmark_create();
     
 	lvSplashScreen();
-    ThisThread::sleep_for(2000);
+    sleepWithLvHandler(2000);
     lvParameterScreen();
 
-    while(1) {
-#if 0
-   		led1 = !led1;
-        lv_task_handler();
-#endif
-		ThisThread::sleep_for(10);
-	}
+    sleepWithLvHandler(0);  // sleep forever and call lv_handler
 }
 
