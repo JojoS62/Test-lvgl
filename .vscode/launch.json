@@ -1,0 +1,104 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C++ Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/BUILD/${config:mbed.mcu}/GCC_ARM-DEBUG/${workspaceFolderBasename}.elf",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${workspaceRoot}",
+            "environment": [],
+            "externalConsole": false,
+            "debugServerArgs": "-f ../scripts/interface/stlink-v2-1.cfg -f ../scripts/target/stm32f4x_stlink.cfg -c init -c \"reset init\" ",
+            "serverLaunchTimeout": 20000,
+            "filterStderr": true,
+            "filterStdout": true,
+            "serverStarted": "",
+            "preLaunchTask": "compile debug",
+            "setupCommands": [
+                { "text": "-target-select remote localhost:3333", "description": "connect to target", "ignoreFailures": false },
+                { "text": "-file-exec-and-symbols ${workspaceFolder}/BUILD/${config:mbed.mcu}/GCC_ARM-DEBUG/${workspaceFolderBasename}.elf", "description": "load file", "ignoreFailures": false},
+                { "text": "-interpreter-exec console \"monitor endian little\"", "ignoreFailures": false },
+                { "text": "-interpreter-exec console \"monitor reset\"", "ignoreFailures": false },
+                { "text": "-interpreter-exec console \"monitor halt\"", "ignoreFailures": false },
+                { "text": "-interpreter-exec console \"monitor arm semihosting enable\"", "ignoreFailures": false },
+                { "text": "-target-download", "description": "flash target", "ignoreFailures": false }
+            ],
+            "logging": {
+                "moduleLoad": true,
+                "trace": true,
+                "engineLogging": true,
+                "programOutput": true,
+                "exceptions": true
+            },
+            "linux": {
+                "MIMode": "gdb",
+                "MIDebuggerPath": "/usr/bin/arm-none-eabi-gdb",
+                "debugServerPath": "pyocd-gdbserver"
+            },
+            "osx": {
+                "MIMode": "gdb",
+                "MIDebuggerPath": "/usr/local/bin/arm-none-eabi-gdb",
+                "debugServerPath": "pyocd-gdbserver"
+            },
+            "windows": {
+                "MIMode": "gdb",
+                "MIDebuggerPath": "c:\\Program Files (x86)\\GNU Tools ARM Embedded\\8 2019-q3-update\\bin\\arm-none-eabi-gdb.exe",
+                "debugServerPath": "c:\\Users\\sn\\AppData\\Roaming\\xPacks\\@gnu-mcu-eclipse\\openocd\\0.10.0-8.1\\.content\\bin\\openocd.exe",
+                "setupCommands": [
+                    { "text": "-environment-cd ${workspaceFolder}\\BUILD\\${config:mbed.mcu}\\GCC_ARM-DEBUG\\" },
+                    { "text": "-target-select remote localhost:3333", "description": "connect to target", "ignoreFailures": false },
+                    { "text": "-file-exec-and-symbols ${workspaceFolderBasename}.elf", "description": "load file", "ignoreFailures": false},
+                    { "text": "-interpreter-exec console \"monitor endian little\"", "ignoreFailures": false },
+                    { "text": "-interpreter-exec console \"monitor reset\"", "ignoreFailures": false },
+                    { "text": "-interpreter-exec console \"monitor halt\"", "ignoreFailures": false },
+                    { "text": "-interpreter-exec console \"monitor arm semihosting enable\"", "ignoreFailures": false },
+                    { "text": "-target-download", "description": "flash target", "ignoreFailures": false }
+                ]
+            }
+        },
+        {
+            "name": "C++ Launch Cortex-Debug",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "openocd",
+            "executable": "./BUILD/DISCO_F469NI/GCC_ARM-DEBUG/mbed-os-blinky.elf",
+            "configFiles": [
+                "../scripts/interface/stlink-v2-1.cfg",
+                "../scripts/target/stm32f4x_stlink.cfg"
+            ]
+        },
+        {
+            "cwd": "${workspaceRoot}",
+            "name": "debug Cortex-Debug STM32Black",
+            "BMPGDBSerialPort": "//./COM12",
+            "interface": "swd",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "bmp",
+            "device": "STM32F407VE",
+            "executable": "./BUILD/STM32F407VE_BLACK/GCC_ARM-DEBUG/Test-lvgl.elf",
+            "configFiles": [
+                "../scripts/interface/stlink-v2-1.cfg",
+                "../scripts/target/stm32f4x_stlink.cfg"
+            ]
+        },
+        {
+            "cwd": "${workspaceRoot}",
+            "name": "release Cortex-Debug STM32Black",
+            "BMPGDBSerialPort": "//./COM12",
+            "interface": "swd",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "bmp",
+            "device": "STM32F407VE",
+            "executable": "./BUILD/STM32F407VE_BLACK/GCC_ARM-RELEASE/Test-lvgl.elf",
+            "configFiles": [
+                "../scripts/interface/stlink-v2-1.cfg",
+                "../scripts/target/stm32f4x_stlink.cfg"
+            ]
+        }
+    ]
+}
