@@ -7,8 +7,8 @@
 #include "benchmark.h"
 #include "touchXPT2046.h"
 
-#include "src/myScreens/lvSplashScreen.h"
-#include "src/myScreens/lvParameterScreen.h"
+#include "src/lvScreens/lvSplashScreen.h"
+#include "src/lvScreens/lvParameterScreen.h"
 
 Thread threadIO;
 Thread threadLvHandler;

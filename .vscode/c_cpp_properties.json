@@ -6,11 +6,11 @@
             ],
             "intelliSenseMode": "gcc-x64",
             "name": "Windows",
-            "compilerPath": "arm-none-eabi-g++",
+            "compilerPath": "\"C:/Program Files/LLVM/bin/clang.exe\"",
             "includePath": [
                 "${workspaceFolder}/*",
                 "${workspaceFolder}/Src/*",
-                "${workspaceFolder}/Src/myScreens/*",
+                "${workspaceFolder}/Src/lvScreens/*",
                 "${workspaceFolder}/custom_targets/TARGET_STM32F4/TARGET_STM32F407xE/*",
                 "${workspaceFolder}/custom_targets/TARGET_STM32F4/TARGET_STM32F407xE/TARGET_STM32F407VE_BLACK/*",
                 "${workspaceFolder}/custom_targets/TARGET_STM32F4/TARGET_STM32F407xE/device/*",
