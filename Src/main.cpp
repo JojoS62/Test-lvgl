@@ -54,21 +54,6 @@ void fnLvTicker ()
 
 
 //
-// lv_task_hanlder thread
-//  needs mutex to avoid hardfault!
-//
-
-void threadFnLvHandler()
-{
-    while(1) {
-		led1 = !led1;
-        lv_task_handler();
-		ThisThread::sleep_for(10);
-	}
-}
-
-
-//
 // IO Thread
 // control tft backlight by button K1
 
@@ -170,10 +155,10 @@ int main()
     lv_img_set_src(mouse_cursor, LV_SYMBOL_PLUS);
     lv_indev_set_cursor(my_indev, mouse_cursor);
 
+    // start threads
     threadIO.start(callback(threadFnIO));
     tickerStepper.attach_us(&fnStepper, 10);
     tickerLvgl.attach_us(&fnLvTicker, 2000);
-    //threadLvHandler.start(callback(threadFnLvHandler));
 
 	//lv_tutorial_hello_world();
     //demo_create();
