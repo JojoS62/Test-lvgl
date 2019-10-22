@@ -1,5 +1,3 @@
-build
+BUILD
 mbed-os
-.mbed
-projectfiles
 *.py*
