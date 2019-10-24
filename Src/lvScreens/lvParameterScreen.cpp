@@ -64,13 +64,17 @@
 /**********************
  *  STATIC PROTOTYPES
  **********************/
-static void btn_event_cb(lv_obj_t * btn, lv_event_t event);
+static void btnUpDown_event_cb(lv_obj_t * btn, lv_event_t event);
+static void btnSetPos_event_cb(lv_obj_t * btn, lv_event_t event);
 static void slider_event_cb(lv_obj_t * ddlist, lv_event_t event);
+static void lvParameterScreen_update_task(bool firstStart);
+
 
 /**********************
  *  STATIC VARIABLES
  **********************/
 static lv_obj_t * slider;
+static lv_obj_t* labelPos;
 
 /**********************
  *      MACROS
@@ -79,8 +83,10 @@ static lv_obj_t * slider;
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/
-lv_obj_t * btn1;
-lv_obj_t * btn2;
+static lv_obj_t* btnUp;
+static lv_obj_t* btnDown;
+static lv_obj_t* btnLoadPos;
+static lv_obj_t* btnBottomPos;
 
 /**
  * Create some objects
@@ -95,6 +101,7 @@ void lvParameterScreen(void)
      * Screen can be created from any type object type
      * Now a Page is used which is an objects with scrollable content*/
     lv_obj_t * scr = lv_page_create(NULL, NULL);
+	scr->user_data = (lv_obj_user_data_t)lvParameterScreen_update_task;
     lv_disp_load_scr(scr);
 
     /****************
@@ -105,33 +112,54 @@ void lvParameterScreen(void)
     lv_obj_set_x(label, 20);                        /*Set the x coordinate*/
 
     /***********************
-     * CREATE TWO BUTTONS
+     * CREATE BUTTONS
      ***********************/
-    /*Create a button*/
-    btn1 = lv_btn_create(lv_disp_get_scr_act(NULL), NULL);         /*Create a button on the currently loaded screen*/
-    lv_obj_set_event_cb(btn1, btn_event_cb);                                  /*Set function to be called when the button is released*/
-    lv_obj_align(btn1, label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 20);               /*Align below the label*/
+    /*Create Up button*/
+    btnUp = lv_btn_create(lv_disp_get_scr_act(NULL), NULL);                     /*Create a button on the currently loaded screen*/
+	lv_obj_set_width(btnUp, LV_DPI * 12 / 10);
+    lv_obj_set_event_cb(btnUp, btnUpDown_event_cb);                             /*Set function to be called when the button is released*/
+    lv_obj_align(btnUp, label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 20);                /*Align below the label*/
 
-    /*Create a label on the button (the 'label' variable can be reused)*/
-    label = lv_label_create(btn1, NULL);
+    label = lv_label_create(btnUp, NULL);
     lv_label_set_text(label, "up");
 
-    /*Copy the previous button*/
-    btn2 = lv_btn_create(scr, btn1);                 /*Second parameter is an object to copy*/
-    lv_obj_align(btn2, btn1, LV_ALIGN_OUT_RIGHT_MID, 50, 0);    /*Align next to the prev. button.*/
+    /* create Down button */
+    btnDown = lv_btn_create(scr, btnUp);                                        /*Second parameter is an object to copy*/
+    lv_obj_align(btnDown, btnUp, LV_ALIGN_OUT_RIGHT_MID, 50, 0);                /*Align next to the prev. button.*/
 
-    /*Create a label on the button*/
-    label = lv_label_create(btn2, NULL);
+    label = lv_label_create(btnDown, NULL);
     lv_label_set_text(label, "down");
+
+    /* create Loadpos button*/
+    btnLoadPos = lv_btn_create(scr, btnUp);                                     /*Second parameter is an object to copy*/
+    lv_obj_set_event_cb(btnLoadPos, btnSetPos_event_cb);                        /*Set function to be called when the button is released*/
+    lv_obj_align(btnLoadPos, btnUp, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 20);           /*Align next to the prev. button.*/
+
+    label = lv_label_create(btnLoadPos, NULL);
+    lv_label_set_text(label, "Load");
+
+    /* create BottomPos button */
+    btnBottomPos = lv_btn_create(scr, btnLoadPos);                              /*Second parameter is an object to copy*/
+    lv_obj_align(btnBottomPos, btnLoadPos, LV_ALIGN_OUT_RIGHT_MID, 50, 0);      /*Align next to the prev. button.*/
+
+    label = lv_label_create(btnBottomPos, NULL);
+    lv_label_set_text(label, "Bottom");
 
     /****************
      * ADD A SLIDER
      ****************/
     slider = lv_slider_create(scr, NULL);                               /*Create a slider*/
-    lv_obj_set_size(slider, lv_obj_get_width(scr)  / 3, LV_DPI / 3);    /*Set the size*/
-    lv_obj_align(slider, btn1, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 20);        /*Align below the first button*/
+    lv_obj_set_size(slider, lv_obj_get_width(scr)  / 2, LV_DPI / 3);    /*Set the size*/
+    lv_obj_align(slider, btnLoadPos, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 20);        /*Align below the first button*/
     lv_obj_set_event_cb(slider, slider_event_cb); 
     lv_slider_set_value(slider, 30, false);                             /*Set the current value*/
+
+	/****************
+	 * ADD A Pos Var
+	 ****************/
+	labelPos = lv_label_create(scr, NULL);
+	lv_obj_align(labelPos, slider, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 20);               /* Align below slider */
+	lv_label_set_text(labelPos, "Pos:    0");
 
 #if 0
     /***********************
@@ -173,24 +201,52 @@ void lvParameterScreen(void)
  *   STATIC FUNCTIONS
  **********************/
 
+static void lvParameterScreen_update_task(bool firstStart)
+{
+    static int motorPosOld = 0;
+    char buffer[32];
+
+    if (firstStart || (motorPos != motorPosOld)) {			// update only if value has changed
+        snprintf(buffer, sizeof(buffer), "Pos: %4d", motorPos);
+        lv_label_set_text(labelPos, buffer);
+        motorPosOld = motorPos;
+    }
+}
+
+
 /**
  * Called when a button is released
  * @param btn pointer to the released button
  * @param event the triggering event
  * @return LV_RES_OK because the object is not deleted in this function
  */
-static void btn_event_cb(lv_obj_t * btn, lv_event_t event)
+static void btnUpDown_event_cb(lv_obj_t * btn, lv_event_t event)
 {
     if (event == LV_EVENT_PRESSED) {
-        if (btn == btn1)
+        if (btn == btnUp)
             motorDirection = 0;
-        if (btn == btn2)
+        if (btn == btnDown)
             motorDirection = 1;
         motorOn = true;
     } else
     if ((event == LV_EVENT_RELEASED)  || (event == LV_EVENT_PRESS_LOST )) {
         motorOn = false;
     }
+}
+
+static void btnSetPos_event_cb(lv_obj_t * btn, lv_event_t event)
+{
+    if (event == LV_EVENT_PRESSED) {
+        if (btn == btnLoadPos) {
+            motorDirection = 0;
+            motorSetPos = 0;
+        }
+        if (btn == btnBottomPos) {
+            motorDirection = 1;
+            motorSetPos = 16*200;
+        }
+        motorOn = true;
+    } 
 }
 
 /**

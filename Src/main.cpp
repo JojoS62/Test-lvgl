@@ -23,6 +23,8 @@ Adafruit_TFTLCD_16bit_STM32 tft(NC);
 
 bool motorOn = false;
 int motorSpeed = 40;
+int motorPos = 0;
+int motorSetPos = 0;
 DigitalOut motorStep(PE_5);      // stepping pulse
 DigitalOut motorDirection(PE_2); // stepping direction
 
@@ -32,15 +34,25 @@ DigitalOut motorDirection(PE_2); // stepping direction
 
 void fnStepper()
 {
-    static int stepCount = 0;
+    static int stepDelayCount = 0;
 
     if (!motorOn) {
         return;
     }
 
-    if (stepCount++ >= motorSpeed) {
-        stepCount = 0;
-        motorStep = !motorStep;
+    if (stepDelayCount++ >= motorSpeed) {
+        stepDelayCount = 0;
+        if (motorPos < motorSetPos) {
+            motorStep = !motorStep;
+            if (motorStep.read() == 0)          // inc pos on falling step pulse
+                motorPos++;
+        } else if (motorPos > motorSetPos) {
+            motorStep = !motorStep;
+            if (motorStep.read() == 0)          // dec pos on falling step pulse
+                motorPos--;
+        } else {
+            motorOn = false;
+        }
     }
 }
 
@@ -107,6 +119,22 @@ void sleepWithLvHandler(uint32_t sleepTime_ms)
     }
 }
 
+typedef void (*lv_update_cb_t)(bool);
+
+static void lv_screen_update_task(lv_task_t* task)
+{
+	static bool firstStart;
+	static lv_obj_t* lastScreen = 0;
+	lv_obj_t* actScreen = lv_disp_get_scr_act(NULL);
+	firstStart = (actScreen != lastScreen);
+	lastScreen = actScreen;
+
+	if (actScreen && actScreen->user_data) {
+		((lv_update_cb_t)actScreen->user_data)(firstStart);
+	}
+}
+
+
 // main() runs in its own thread in the OS
 int main()
 {
@@ -121,6 +149,8 @@ int main()
 
     lv_init();
     lv_port_disp_init();
+	// register update handler
+	lv_task_t* task = lv_task_create(lv_screen_update_task, 200, LV_TASK_PRIO_MID, 0);
 
     // setup touchpad
     lv_indev_drv_t indev_drv;
