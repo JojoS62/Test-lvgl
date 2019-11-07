@@ -99,6 +99,21 @@
                 "../scripts/interface/stlink-v2-1.cfg",
                 "../scripts/target/stm32f4x_stlink.cfg"
             ]
+        },
+        {
+            "cwd": "${workspaceRoot}",
+            "name": "develop Cortex-Debug STM32Black",
+            "BMPGDBSerialPort": "//./COM12",
+            "interface": "swd",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "bmp",
+            "device": "STM32F407VE",
+            "executable": "./BUILD/STM32F407VE_BLACK/GCC_ARM-DEVELOP/Test-lvgl.elf",
+            "configFiles": [
+                "../scripts/interface/stlink-v2-1.cfg",
+                "../scripts/target/stm32f4x_stlink.cfg"
+            ]
         }
     ]
 }

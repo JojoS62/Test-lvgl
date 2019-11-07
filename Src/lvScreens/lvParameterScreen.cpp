@@ -75,6 +75,11 @@ static void lvParameterScreen_update_task(bool firstStart);
  **********************/
 static lv_obj_t * slider;
 static lv_obj_t* labelPos;
+static lv_obj_t* btnUp;
+static lv_obj_t* btnDown;
+static lv_obj_t* btnLoadPos;
+static lv_obj_t* btnBottomPos;
+static lv_obj_t* labelCPU;
 
 /**********************
  *      MACROS
@@ -83,10 +88,6 @@ static lv_obj_t* labelPos;
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/
-static lv_obj_t* btnUp;
-static lv_obj_t* btnDown;
-static lv_obj_t* btnLoadPos;
-static lv_obj_t* btnBottomPos;
 
 /**
  * Create some objects
@@ -110,6 +111,10 @@ void lvParameterScreen(void)
     lv_obj_t * label = lv_label_create(scr, NULL); /*First parameters (scr) is the parent*/
     lv_label_set_text(label, "Settings");  /*Set the text*/
     lv_obj_set_x(label, 20);                        /*Set the x coordinate*/
+
+    // CPU load
+    labelCPU = lv_label_create(scr, NULL);
+    lv_obj_set_x(labelCPU, 270);
 
     /***********************
      * CREATE BUTTONS
@@ -203,13 +208,20 @@ void lvParameterScreen(void)
 
 static void lvParameterScreen_update_task(bool firstStart)
 {
-    static int motorPosOld = 0;
     char buffer[32];
 
+    static int motorPosOld = 0;
     if (firstStart || (motorPos != motorPosOld)) {			// update only if value has changed
         snprintf(buffer, sizeof(buffer), "Pos: %4d", motorPos);
         lv_label_set_text(labelPos, buffer);
         motorPosOld = motorPos;
+    }
+
+    static int cpuUsageOld = 0;
+    if (firstStart || (cpuUsage != cpuUsageOld)) {
+        snprintf(buffer, sizeof(buffer), "%4d %%", cpuUsage);
+        lv_label_set_text(labelCPU, buffer);
+        cpuUsageOld = cpuUsage;
     }
 }
 
@@ -258,7 +270,7 @@ static void btnSetPos_event_cb(lv_obj_t * btn, lv_event_t event)
 static void slider_event_cb(lv_obj_t * slider, lv_event_t event)
 {
     if(event == LV_EVENT_VALUE_CHANGED ) {
-        motorSpeed = (100 - lv_slider_get_value(slider)) + 5;
+        motorSpeed = (1000 - lv_slider_get_value(slider)*10);
     }
 }
 

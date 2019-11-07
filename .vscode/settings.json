@@ -1,4 +1,8 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-    "C_Cpp.addWorkspaceRootToIncludePath": false
+    "C_Cpp.addWorkspaceRootToIncludePath": false,
+    "files.associations": {
+        "*.cpp": "cpp",
+        "thread": "cpp"
+    }
 }

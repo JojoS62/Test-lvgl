@@ -6,17 +6,26 @@
 #include "lv_test_theme_2.h"
 #include "benchmark.h"
 #include "touchXPT2046.h"
+#include "libs/util/stepper.h"
 
 #include "src/lvScreens/lvSplashScreen.h"
 #include "src/lvScreens/lvParameterScreen.h"
 
+#if !defined(MBED_CPU_STATS_ENABLED) || !defined(DEVICE_LPTICKER) || !defined(DEVICE_SLEEP)
+#error [NOT_SUPPORTED] test not supported
+#endif
+
+#define USE_HW_TIMER
+
+
 Thread threadIO;
 Thread threadLvHandler;
+Thread threadStepper;
 Ticker tickerStepper;
 Ticker tickerLvgl;
 
-DigitalOut led1(LED1); // onboard LEDs
-DigitalOut led2(LED2);
+DigitalOut led1(LED1, 1); // onboard LEDs
+DigitalOut led2(LED2, 1);
 Adafruit_TFTLCD_16bit_STM32 tft(NC);
 
 // global vars for stepper motor
@@ -25,36 +34,33 @@ bool motorOn = false;
 int motorSpeed = 40;
 int motorPos = 0;
 int motorSetPos = 0;
-DigitalOut motorStep(PE_5);      // stepping pulse
-DigitalOut motorDirection(PE_2); // stepping direction
+int motorDirection = 0;
+//DigitalOut motorStep(PE_5);      // stepping pulse
+//DigitalOut motorDirection(PE_2); // stepping direction
+
 
 //
-// stepper motor control
+// calc cpu usage
 //
 
-void fnStepper()
+#define SAMPLE_TIME             2000    // msec
+int cpuUsage = 0;
+
+void calc_cpu_usage()
 {
-    static int stepDelayCount = 0;
+    static uint64_t prev_idle_time = 0;
+    mbed_stats_cpu_t stats;
+    mbed_stats_cpu_get(&stats);
 
-    if (!motorOn) {
-        return;
-    }
+    uint64_t diff = (stats.idle_time - prev_idle_time);
+    int idle = (diff * 100) / (SAMPLE_TIME*1000);    // usec;
+    cpuUsage = 100 - ((diff * 100) / (SAMPLE_TIME*1000));    // usec;;
+    prev_idle_time = stats.idle_time;
 
-    if (stepDelayCount++ >= motorSpeed) {
-        stepDelayCount = 0;
-        if (motorPos < motorSetPos) {
-            motorStep = !motorStep;
-            if (motorStep.read() == 0)          // inc pos on falling step pulse
-                motorPos++;
-        } else if (motorPos > motorSetPos) {
-            motorStep = !motorStep;
-            if (motorStep.read() == 0)          // dec pos on falling step pulse
-                motorPos--;
-        } else {
-            motorOn = false;
-        }
-    }
+    printf("Idle: %4d Usage: %4d \n", idle, cpuUsage);
 }
+
+
 
 //
 // lv Ticker, executed in interrupt context
@@ -110,7 +116,6 @@ void sleepWithLvHandler(uint32_t sleepTime_ms)
     const uint32_t timeSlice = 5;
 
     while (elapsedTime <= sleepTime_ms) {
-        led1 = !led1;
         lv_task_handler();
         ThisThread::sleep_for(timeSlice);
         if (sleepTime_ms > 0) {
@@ -123,8 +128,9 @@ typedef void (*lv_update_cb_t)(bool);
 
 static void lv_screen_update_task(lv_task_t* task)
 {
-	static bool firstStart;
 	static lv_obj_t* lastScreen = 0;
+	bool firstStart;
+
 	lv_obj_t* actScreen = lv_disp_get_scr_act(NULL);
 	firstStart = (actScreen != lastScreen);
 	lastScreen = actScreen;
@@ -140,6 +146,11 @@ int main()
 {
     printf("Hello from STM32F407VE\n");
 
+    // Request the shared queue
+    EventQueue *stats_queue = mbed_event_queue();
+
+    stats_queue->call_every(SAMPLE_TIME, calc_cpu_usage);
+
     tft.begin();
     tft.setRotation(1);
 
@@ -150,7 +161,7 @@ int main()
     lv_init();
     lv_port_disp_init();
 	// register update handler
-	lv_task_t* task = lv_task_create(lv_screen_update_task, 200, LV_TASK_PRIO_MID, 0);
+	lv_task_create(lv_screen_update_task, 200, LV_TASK_PRIO_MID, 0);
 
     // setup touchpad
     lv_indev_drv_t indev_drv;
@@ -168,17 +179,12 @@ int main()
 
     // start threads
     threadIO.start(callback(threadFnIO));
-    tickerStepper.attach_us(&fnStepper, 10);
     tickerLvgl.attach_us(&fnLvTicker, 2000);
 
     //lv_tutorial_hello_world();
-    //demo_create();
+    demo_create();
     //lv_test_theme_2();
     //benchmark_create();
-
-    lvSplashScreen();
-    sleepWithLvHandler(2000);
-    lvParameterScreen();
 
     sleepWithLvHandler(0); // sleep forever and call lv_handler
 }
