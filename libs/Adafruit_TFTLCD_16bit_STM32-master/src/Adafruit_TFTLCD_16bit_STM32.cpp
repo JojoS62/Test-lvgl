@@ -5,7 +5,7 @@
 // MIT license
 
 #include "Adafruit_common.h"
-#include "ili9341.h"
+#include "ili9341.h" 
 
 #ifdef __MBED__
 volatile uint16_t *fsmcCommand;
@@ -14,9 +14,20 @@ volatile uint16_t *fsmcData;
 int fsmc_lcd_init() {
 
   // enable peripherial clocks
-  __HAL_RCC_GPIOD_CLK_ENABLE();
-  __HAL_RCC_GPIOE_CLK_ENABLE();
-  __HAL_RCC_FSMC_CLK_ENABLE();
+  //__HAL_RCC_GPIOD_CLK_ENABLE();
+  //__HAL_RCC_GPIOE_CLK_ENABLE();
+  //__HAL_RCC_FSMC_CLK_ENABLE();
+
+  // workaround, the HAL macros produce warnings
+  volatile uint32_t dummy;
+  RCC->AHB1ENR |= RCC_AHB1ENR_GPIODEN;
+  dummy = RCC->AHB1ENR;
+  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOEEN;
+  dummy = RCC->AHB1ENR;
+  RCC->AHB3ENR |= RCC_AHB3ENR_FSMCEN;
+  dummy = RCC->AHB3ENR;
+  dummy = dummy;
+
 
   // set GPIO Alternate Function FSMC
   GPIO_InitTypeDef GPIO_InitStructure;
@@ -161,13 +172,13 @@ void Adafruit_TFTLCD_16bit_STM32::reset(void)
   if (tft_rst.is_connected())
   {
       tft_rst = 1;
-      wait_ms(100);
+      ThisThread::sleep_for(100);
 
       tft_rst = 0;
-      wait_ms(100);
+      ThisThread::sleep_for(100);
 
       tft_rst = 1;
-      wait_ms(100);
+      ThisThread::sleep_for(100);
   }
 #endif
 }
