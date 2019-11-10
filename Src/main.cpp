@@ -30,9 +30,6 @@ int motorSpeed = 40;
 int motorPos = 0;
 int motorSetPos = 0;
 int motorDirection = 0;
-//DigitalOut motorStep(PE_5);      // stepping pulse
-//DigitalOut motorDirection(PE_2); // stepping direction
-
 
 //
 // calc cpu usage
