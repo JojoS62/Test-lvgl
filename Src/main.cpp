@@ -15,18 +15,13 @@
 #error [NOT_SUPPORTED] test not supported
 #endif
 
-#define USE_HW_TIMER
-
 
 Thread threadIO;
-Thread threadLvHandler;
-Thread threadStepper;
-Ticker tickerStepper;
 Ticker tickerLvgl;
 
 DigitalOut led1(LED1, 1); // onboard LEDs
 DigitalOut led2(LED2, 1);
-Adafruit_TFTLCD_16bit_STM32 tft(NC);
+Adafruit_TFTLCD_16bit_STM32 tft(NC, 240, 320);
 
 // global vars for stepper motor
 
@@ -154,7 +149,13 @@ int main()
     tft.begin();
     tft.setRotation(1);
 
-    tft.fillScreen(RED);
+    tft.fillScreen(BLACK);
+    tft.setCursor(30, 30);
+    tft.printf("hello world\n");
+    tft.setCursor(30, 50);
+    tft.printf("using AdafruitGFX\n");
+    tft.drawRect(0, 0, 320, 240, WHITE);
+    ThisThread::sleep_for(1000);
 
     initTouchXPT2046();
 
