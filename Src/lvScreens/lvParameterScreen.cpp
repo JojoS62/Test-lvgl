@@ -69,6 +69,11 @@ static void btnSetPos_event_cb(lv_obj_t * btn, lv_event_t event);
 static void slider_event_cb(lv_obj_t * ddlist, lv_event_t event);
 static void lvParameterScreen_update_task(bool firstStart);
 
+static bool motorOn;
+static int motorSpeed;
+static int motorPos;
+static int motorSetPos;
+static int motorDirection;
 
 /**********************
  *  STATIC VARIABLES
@@ -95,6 +100,8 @@ static lv_obj_t* labelCPU;
 void lvParameterScreen(void)
 {
 
+   // my_style.text.font = &Roboto16;
+
     /********************
      * CREATE A SCREEN
      *******************/
@@ -102,6 +109,7 @@ void lvParameterScreen(void)
      * Screen can be created from any type object type
      * Now a Page is used which is an objects with scrollable content*/
     lv_obj_t * scr = lv_page_create(NULL, NULL);
+
 	scr->user_data = (lv_obj_user_data_t)lvParameterScreen_update_task;
     lv_disp_load_scr(scr);
 
@@ -223,6 +231,7 @@ static void lvParameterScreen_update_task(bool firstStart)
         lv_label_set_text(labelCPU, buffer);
         cpuUsageOld = cpuUsage;
     }
+
 }
 
 
