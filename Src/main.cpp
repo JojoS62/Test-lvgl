@@ -1,15 +1,19 @@
 #include "mbed.h"
 #include "Adafruit_TFTLCD_16bit_STM32.h"
-#include "lvgl.h"
-#include "lv_port_disp.h"
-#include "demo.h"
-#include "lv_test_theme_2.h"
-#include "benchmark.h"
-#include "touchXPT2046.h"
-#include "libs/util/stepper.h"
+#include "libs/Display/touchDriver/touchXPT2046.h"
 
+#include "libs/lvgl/lvgl.h"
+#include "libs/lvgl/porting/lv_port_disp.h"
+#include "libs/lvgl/lv_examples/lv_apps/demo/demo.h"
+#include "libs/lvgl/lv_examples/lv_tests/lv_test_theme/lv_test_theme_2.h"
+#include "libs/lvgl/lv_examples/lv_apps/benchmark/benchmark.h"
+#include "libs/lvgl/lv_examples/lv_tutorial/6_images/lv_tutorial_images.h"
 #include "src/lvScreens/lvSplashScreen.h"
 #include "src/lvScreens/lvParameterScreen.h"
+
+#include "components/sdio-driver/SDIOBlockDevice.h"
+#include "FATFileSystem.h"
+
 
 #if !defined(MBED_CPU_STATS_ENABLED) || !defined(DEVICE_LPTICKER) || !defined(DEVICE_SLEEP)
 #error [NOT_SUPPORTED] test not supported
@@ -19,17 +23,22 @@
 Thread threadIO;
 Ticker tickerLvgl;
 
+#define LED_OFF (1)
+#define LED_ON  (0)
+
 DigitalOut led1(LED1, 1); // onboard LEDs
 DigitalOut led2(LED2, 1);
+
+// graphics class, used for initializing tft
 Adafruit_TFTLCD_16bit_STM32 tft(NC, 240, 320);
 
-// global vars for stepper motor
 
-bool motorOn = false;
-int motorSpeed = 40;
-int motorPos = 0;
-int motorSetPos = 0;
-int motorDirection = 0;
+// Physical block device, can be any device that supports the BlockDevice API
+SDIOBlockDevice bd;
+// File system declaration
+FATFileSystem fs("sda", &bd);
+
+
 
 //
 // calc cpu usage
@@ -138,9 +147,9 @@ int main()
 {
     printf("Hello from STM32F407VE\n");
 
-    // Request the shared queue
+    // Mbed CPU perfomance measuring. Has slight impact on perfomance itself!
+    //  mbed_app.json needs : 'platform.cpu-stats-enabled": true'
     EventQueue *stats_queue = mbed_event_queue();
-
     stats_queue->call_every(SAMPLE_TIME, calc_cpu_usage);
 
     tft.begin();
@@ -158,7 +167,8 @@ int main()
 
     lv_init();
     lv_port_disp_init();
-	// register update handler
+
+	// register update handler. Task will call screen dependent cyclic updates
 	lv_task_create(lv_screen_update_task, 200, LV_TASK_PRIO_MID, 0);
 
     // setup touchpad
@@ -180,9 +190,18 @@ int main()
     tickerLvgl.attach_us(&fnLvTicker, 2000);
 
     //lv_tutorial_hello_world();
-    demo_create();
+    //demo_create();
     //lv_test_theme_2();
     //benchmark_create();
 
+    // display splash screen for 2000 ms
+    //lvSplashScreen();
+    //sleepWithLvHandler(2000);
+
+    // main screen
+    //lvParameterScreen();
+    lv_tutorial_image();
+
+    // simple main loop, should handle events
     sleepWithLvHandler(0); // sleep forever and call lv_handler
 }

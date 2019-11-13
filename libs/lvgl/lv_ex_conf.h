@@ -26,7 +26,7 @@
 /*******************
  * TUTORIAL USAGE
  *******************/
-#define LV_USE_TUTORIALS   0
+#define LV_USE_TUTORIALS   1
 
 
 /*********************
