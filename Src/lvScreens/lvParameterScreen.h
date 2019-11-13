@@ -24,7 +24,12 @@ extern "C" {
 #include "../../lv_ex_conf.h"
 #endif
 
-//extern int motorDirection;
+extern bool motorOn;
+extern int motorSpeed;
+extern int motorPos;
+extern int motorSetPos;
+//extern DigitalOut motorDirection;
+extern int motorDirection;
 extern int cpuUsage;
 
 /*********************

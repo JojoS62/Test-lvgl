@@ -161,20 +161,20 @@ void lv_tutorial_image(void)
     /* Set the image's file according to the current color depth
      * a blue flower picture*/
 #if LV_COLOR_DEPTH == 8
-    lv_img_set_src(img_bin, "P:/blue_flower_8.bin");
+    lv_img_set_src(img_bin, "P:/lv_examples/lv_tutorial/6_images/blue_flower_8.bin");
 #elif LV_COLOR_DEPTH == 16 && LV_COLOR_16_SWAP == 0
-    lv_img_set_src(img_bin, "P:/blue_flower_16.bin");
+    lv_img_set_src(img_bin, "P:/lv_examples/lv_tutorial/6_images/blue_flower_16.bin");
 #elif LV_COLOR_DEPTH == 16 && LV_COLOR_16_SWAP == 0
-    lv_img_set_src(img_bin, "P:/blue_flower_16_swap.bin");
+    lv_img_set_src(img_bin, "P:/lv_examples/lv_tutorial/6_images/blue_flower_16_swap.bin");
 #elif LV_COLOR_DEPTH == 32
-    lv_img_set_src(img_bin, "P:/blue_flower_32.bin");
+    lv_img_set_src(img_bin, "P:/lv_examples/lv_tutorial/6_images/blue_flower_32.bin");
 #endif
 
     lv_obj_set_pos(img_bin, 150, 10);     /*Align next to the source image*/
     lv_obj_set_drag(img_bin, true);
 
     img_bin = lv_img_create(scr, NULL); /*Crate an image object*/
-    lv_img_set_src(img_bin, "P:/blue_rose_16.bin");  /*Set the created file as image (a red rose)*/
+    lv_img_set_src(img_bin, "P:/lv_examples/lv_tutorial/6_images/blue_rose_16.bin");  /*Set the created file as image (a red rose)*/
     lv_obj_set_pos(img_bin, 150, 100);      /*Set the positions*/
     lv_obj_set_drag(img_bin, true);
 
@@ -183,7 +183,7 @@ void lv_tutorial_image(void)
     style_blue.image.color = LV_COLOR_BLUE;
 
     img_bin = lv_img_create(scr, NULL); /*Crate an image object*/
-    lv_img_set_src(img_bin, "P:/flower_icon_alpha.bin");  /*Set the created file as image (a red flower icon)*/
+    lv_img_set_src(img_bin, "P:/lv_examples/lv_tutorial/6_images/flower_icon_alpha.bin");  /*Set the created file as image (a red flower icon)*/
     lv_img_set_style(img_bin, LV_IMG_STYLE_MAIN, &style_blue);
     lv_obj_set_pos(img_bin, 150, 200);      /*Set the positions*/
     lv_obj_set_drag(img_bin, true);
@@ -223,7 +223,7 @@ static lv_fs_res_t pcfs_open(lv_fs_drv_t * drv, void * file_p, const char * fn, 
 
     /*Make the path relative to the current directory (the projects root folder)*/
     char buf[256];
-    sprintf(buf, "sda/%s", fn);
+    sprintf(buf, "./%s", fn);
 
     pc_file_t f = fopen(buf, flags);
     if(f == NULL) return LV_FS_RES_UNKNOWN;
