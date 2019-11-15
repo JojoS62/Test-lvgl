@@ -218,7 +218,8 @@ typedef enum {
 	BUTTON_K0	= PE_4,
 	BUTTON_K1	= PE_3,
     // Standardized button names
-    BUTTON1 = USER_BUTTON,
+    BUTTON1     = PE_4,
+    BUTTON2     = PE_3,
     SERIAL_TX   = STDIO_UART_TX, /* USART2 */
     SERIAL_RX   = STDIO_UART_RX,
     USBTX       = STDIO_UART_TX, /* USART2 */
@@ -236,7 +237,7 @@ typedef enum {
     // USB_OTG_HS_SOF = PA_4,
     // USB_OTG_HS_ULPI_CK = PA_5,
     // USB_OTG_FS_SOF = PA_8,
-     USB_OTG_FS_VBUS = PA_8,
+//    USB_OTG_FS_VBUS = PA_8,
     // USB_OTG_FS_ID = PA_10,
     USB_OTG_FS_DM = PA_11,
     USB_OTG_FS_DP = PA_12,
@@ -254,6 +255,30 @@ typedef enum {
     // USB_OTG_HS_ULPI_STP = PC_0,
     // USB_OTG_HS_ULPI_DIR = PC_2,
     // USB_OTG_HS_ULPI_NXT = PC_3,
+
+    /**** ETHERNET pins ****/
+    ETH_COL = PA_3,
+    ETH_CRS = PA_0,
+    ETH_CRS_DV = PA_7,
+    ETH_MDC = PC_1,
+    ETH_MDIO = PA_2,
+    ETH_PPS_OUT = PB_5,
+    ETH_REF_CLK = PA_1,
+    ETH_RXD0 = PC_4,
+    ETH_RXD1 = PC_5,
+    ETH_RXD2 = PB_0,
+    ETH_RXD3 = PB_1,
+    ETH_RX_CLK = PA_1,
+    ETH_RX_DV = PA_7,
+    ETH_RX_ER = PB_10,
+    ETH_TXD0 = PB_12,
+    ETH_TXD1 = PB_13,
+    ETH_TXD2 = PC_2,
+    ETH_TXD3 = PE_2,
+    ETH_TXD3_ALT0 = PB_8,
+    ETH_TX_CLK = PC_3,
+    ETH_TX_EN = PB_11,
+
 
     // Not connected
     NC = (int)0xFFFFFFFF
