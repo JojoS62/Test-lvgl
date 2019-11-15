@@ -211,6 +211,8 @@
 #define MBED_CONF_S2LP_PROVIDE_DEFAULT                                        0                                                                                                // set by library:s2lp
 #define MBED_CONF_SARA4_PPP_BAUDRATE                                          115200                                                                                           // set by library:SARA4_PPP
 #define MBED_CONF_SARA4_PPP_PROVIDE_DEFAULT                                   0                                                                                                // set by library:SARA4_PPP
+#define MBED_CONF_SDIO_CMD_TIMEOUT                                            30000                                                                                            // set by library:sdio
+#define MBED_CONF_SDIO_FSFAT_SDCARD_INSTALLED                                 1                                                                                                // set by library:sdio
 #define MBED_CONF_STORAGE_DEFAULT_KV                                          kv                                                                                               // set by library:storage
 #define MBED_CONF_STORAGE_FILESYSTEM_BLOCKDEVICE                              default                                                                                          // set by library:storage_filesystem
 #define MBED_CONF_STORAGE_FILESYSTEM_EXTERNAL_BASE_ADDRESS                    0                                                                                                // set by library:storage_filesystem
@@ -256,6 +258,7 @@
 #define MBED_CONF_UBLOX_N2XX_PROVIDE_DEFAULT                                  0                                                                                                // set by library:UBLOX_N2XX
 #define MBED_CONF_UBLOX_PPP_BAUDRATE                                          115200                                                                                           // set by library:UBLOX_PPP
 #define MBED_CONF_UBLOX_PPP_PROVIDE_DEFAULT                                   0                                                                                                // set by library:UBLOX_PPP
+#define MBED_CPU_STATS_ENABLED                                                1                                                                                                // set by application[*]
 #define MBED_LFS_BLOCK_SIZE                                                   512                                                                                              // set by library:littlefs
 #define MBED_LFS_ENABLE_INFO                                                  0                                                                                                // set by library:littlefs
 #define MBED_LFS_INTRINSICS                                                   1                                                                                                // set by library:littlefs

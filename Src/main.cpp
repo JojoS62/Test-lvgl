@@ -14,6 +14,8 @@
 #include "components/sdio-driver/SDIOBlockDevice.h"
 #include "FATFileSystem.h"
 
+#include "USBSerial.h"
+
 
 #if !defined(MBED_CPU_STATS_ENABLED) || !defined(DEVICE_LPTICKER) || !defined(DEVICE_SLEEP)
 #error [NOT_SUPPORTED] test not supported
@@ -21,6 +23,7 @@
 
 
 Thread threadIO;
+Thread threadUSBSerial;
 Ticker tickerLvgl;
 
 #define LED_OFF (1)
@@ -32,13 +35,12 @@ DigitalOut led2(LED2, 1);
 // graphics class, used for initializing tft
 Adafruit_TFTLCD_16bit_STM32 tft(NC, 240, 320);
 
-
 // Physical block device, can be any device that supports the BlockDevice API
 SDIOBlockDevice bd;
 // File system declaration
 FATFileSystem fs("sda", &bd);
 
-
+Serial com(STDIO_UART_TX, STDIO_UART_RX, 115200);
 
 //
 // calc cpu usage
@@ -46,6 +48,7 @@ FATFileSystem fs("sda", &bd);
 
 #define SAMPLE_TIME             2000    // msec
 int cpuUsage = 0;
+int idle = 0;
 
 void calc_cpu_usage()
 {
@@ -54,14 +57,27 @@ void calc_cpu_usage()
     mbed_stats_cpu_get(&stats);
 
     uint64_t diff = (stats.idle_time - prev_idle_time);
-    int idle = (diff * 100) / (SAMPLE_TIME*1000);    // usec;
+    idle = (diff * 100) / (SAMPLE_TIME*1000);    // usec;
     cpuUsage = 100 - ((diff * 100) / (SAMPLE_TIME*1000));    // usec;;
     prev_idle_time = stats.idle_time;
 
-    printf("Idle: %4d Usage: %4d \n", idle, cpuUsage);
+    com.printf("Idle: %4d Usage: %4d \n", idle, cpuUsage);
 }
 
+//
+// test USBSerial communication
+// 
 
+void threadFnUSBSerial()
+{
+    USBSerial usbSerial;     // serial USB device, blocking connect
+    usbSerial.printf("USBSerial connected.\r");
+
+    while(1) {
+        usbSerial.printf("Idle: %4d Usage: %4d \n", idle, cpuUsage);
+        ThisThread::sleep_for(SAMPLE_TIME);
+    }
+}
 
 //
 // lv Ticker, executed in interrupt context
@@ -118,6 +134,7 @@ void sleepWithLvHandler(uint32_t sleepTime_ms)
 
     while (elapsedTime <= sleepTime_ms) {
         lv_task_handler();
+
         ThisThread::sleep_for(timeSlice);
         if (sleepTime_ms > 0) {
             elapsedTime += timeSlice;
@@ -145,7 +162,7 @@ static void lv_screen_update_task(lv_task_t* task)
 // main() runs in its own thread in the OS
 int main()
 {
-    printf("Hello from STM32F407VE\n");
+    com.printf("Hello from STM32F407VE\n");
 
     // Mbed CPU perfomance measuring. Has slight impact on perfomance itself!
     //  mbed_app.json needs : 'platform.cpu-stats-enabled": true'
@@ -187,6 +204,7 @@ int main()
 
     // start threads
     threadIO.start(callback(threadFnIO));
+    threadUSBSerial.start(callback(threadFnUSBSerial));
     tickerLvgl.attach_us(&fnLvTicker, 2000);
 
     //lv_tutorial_hello_world();
