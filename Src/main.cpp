@@ -1,9 +1,9 @@
 #include "mbed.h"
-#include "Adafruit_TFTLCD_16bit_STM32.h"
+#include "libs/lvgl/lvgl.h"
+
+#include "libs/Display/lvglDriver/lvglDispDriverSTM32F407VE_BLACK.h"
 #include "libs/Display/touchDriver/touchXPT2046.h"
 
-#include "libs/lvgl/lvgl.h"
-#include "libs/lvgl/porting/lv_port_disp.h"
 #include "libs/lvgl/lv_examples/lv_apps/demo/demo.h"
 #include "libs/lvgl/lv_examples/lv_tests/lv_test_theme/lv_test_theme_2.h"
 #include "libs/lvgl/lv_examples/lv_apps/benchmark/benchmark.h"
@@ -33,14 +33,12 @@ DigitalOut led1(LED1, 1); // onboard LEDs
 DigitalOut led2(LED2, 1);
 
 // graphics class, used for initializing tft
-Adafruit_TFTLCD_16bit_STM32 tft(NC, 240, 320);
+lvglDispSTM32F407VE_BLACK   lvglDisplay;
 
 // Physical block device, can be any device that supports the BlockDevice API
 SDIOBlockDevice bd;
 // File system declaration
 FATFileSystem fs("sda", &bd);
-
-Serial com(STDIO_UART_TX, STDIO_UART_RX, 115200);
 
 //
 // calc cpu usage
@@ -61,7 +59,7 @@ void calc_cpu_usage()
     cpuUsage = 100 - ((diff * 100) / (SAMPLE_TIME*1000));    // usec;;
     prev_idle_time = stats.idle_time;
 
-    com.printf("Idle: %4d Usage: %4d \n", idle, cpuUsage);
+    printf("Idle: %4d Usage: %4d \n", idle, cpuUsage);
 }
 
 //
@@ -162,28 +160,14 @@ static void lv_screen_update_task(lv_task_t* task)
 // main() runs in its own thread in the OS
 int main()
 {
-    com.printf("Hello from STM32F407VE\n");
+    printf("Hello from STM32F407VE\n");
 
     // Mbed CPU perfomance measuring. Has slight impact on perfomance itself!
     //  mbed_app.json needs : 'platform.cpu-stats-enabled": true'
     EventQueue *stats_queue = mbed_event_queue();
     stats_queue->call_every(SAMPLE_TIME, calc_cpu_usage);
 
-    tft.begin();
-    tft.setRotation(1);
-
-    tft.fillScreen(BLACK);
-    tft.setCursor(30, 30);
-    tft.printf("hello world\n");
-    tft.setCursor(30, 50);
-    tft.printf("using AdafruitGFX\n");
-    tft.drawRect(0, 0, 320, 240, WHITE);
-    ThisThread::sleep_for(1000);
-
     initTouchXPT2046();
-
-    lv_init();
-    lv_port_disp_init();
 
 	// register update handler. Task will call screen dependent cyclic updates
 	lv_task_create(lv_screen_update_task, 200, LV_TASK_PRIO_MID, 0);
@@ -191,16 +175,18 @@ int main()
     // setup touchpad
     lv_indev_drv_t indev_drv;
     lv_indev_drv_init(&indev_drv);          // Basic initialization
+    indev_drv.disp = lvglDisplay.getLVDisp();
     indev_drv.type = LV_INDEV_TYPE_POINTER; // touchpad
     indev_drv.read_cb = readTouchXPT2046;
-
     /* Register the driver in LittlevGL and save the created input device object*/
     lv_indev_t *my_indev = lv_indev_drv_register(&indev_drv);
 
     /* Set cursor */
+    #ifdef USE_CURSOR
     lv_obj_t *mouse_cursor = lv_img_create(lv_disp_get_scr_act(NULL), NULL);
     lv_img_set_src(mouse_cursor, LV_SYMBOL_PLUS);
     lv_indev_set_cursor(my_indev, mouse_cursor);
+    #endif
 
     // start threads
     threadIO.start(callback(threadFnIO));

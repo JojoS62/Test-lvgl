@@ -10,7 +10,7 @@
  #define boolean bool
 #endif
 
-#define delay   wait_ms
+#define delay   ThisThread::sleep_for
 
 #else
 #if ARDUINO >= 100
