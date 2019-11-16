@@ -2,7 +2,8 @@
 #include "libs/lvgl/lvgl.h"
 
 #include "libs/Display/lvglDriver/lvglDispDriverSTM32F407VE_BLACK.h"
-#include "libs/Display/touchDriver/touchXPT2046.h"
+#include "libs/Display/lvglDriver/lvglTouchDriverXPT2046.h"
+//#include "libs/Display/touchDriver/touchXPT2046.h"
 
 #include "libs/lvgl/lv_examples/lv_apps/demo/demo.h"
 #include "libs/lvgl/lv_examples/lv_tests/lv_test_theme/lv_test_theme_2.h"
@@ -167,19 +168,11 @@ int main()
     EventQueue *stats_queue = mbed_event_queue();
     stats_queue->call_every(SAMPLE_TIME, calc_cpu_usage);
 
-    initTouchXPT2046();
-
 	// register update handler. Task will call screen dependent cyclic updates
 	lv_task_create(lv_screen_update_task, 200, LV_TASK_PRIO_MID, 0);
 
-    // setup touchpad
-    lv_indev_drv_t indev_drv;
-    lv_indev_drv_init(&indev_drv);          // Basic initialization
-    indev_drv.disp = lvglDisplay.getLVDisp();
-    indev_drv.type = LV_INDEV_TYPE_POINTER; // touchpad
-    indev_drv.read_cb = readTouchXPT2046;
-    /* Register the driver in LittlevGL and save the created input device object*/
-    lv_indev_t *my_indev = lv_indev_drv_register(&indev_drv);
+    // attach touch screen to display
+    lvglTouchDriverXPT2046 lvglTouch(PB_15, PB_14, PB_13, PB_12, PC_5, &lvglDisplay);
 
     /* Set cursor */
     #ifdef USE_CURSOR
