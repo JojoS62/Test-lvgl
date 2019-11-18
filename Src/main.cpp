@@ -1,9 +1,11 @@
 #include "mbed.h"
 #include "libs/lvgl/lvgl.h"
 
-#include "libs/Display/lvglDriver/lvglDispDriverSTM32F407VE_BLACK.h"
-#include "libs/Display/lvglDriver/lvglTouchDriverXPT2046.h"
-//#include "libs/Display/touchDriver/touchXPT2046.h"
+#if defined(TARGET_STM32F407VE_BLACK)
+#include "lvglDispDriverSTM32F407VE_BLACK.h"
+#include "lvglTouchDriverXPT2046.h"
+#elif defined(TARGET_DISCO_F746NG)
+#endif
 
 #include "libs/lvgl/lv_examples/lv_apps/demo/demo.h"
 #include "libs/lvgl/lv_examples/lv_tests/lv_test_theme/lv_test_theme_2.h"
@@ -34,7 +36,11 @@ DigitalOut led1(LED1, 1); // onboard LEDs
 DigitalOut led2(LED2, 1);
 
 // graphics class, used for initializing tft
+#if defined(TARGET_STM32F407VE_BLACK)
 lvglDispSTM32F407VE_BLACK   lvglDisplay;
+lvglTouchDriverXPT2046 lvglTouch(PB_15, PB_14, PB_13, PB_12, PC_5, &lvglDisplay);
+#elif defined(TARGET_DISCO_F746NG)
+#endif
 
 // Physical block device, can be any device that supports the BlockDevice API
 SDIOBlockDevice bd;
@@ -170,9 +176,6 @@ int main()
 
 	// register update handler. Task will call screen dependent cyclic updates
 	lv_task_create(lv_screen_update_task, 200, LV_TASK_PRIO_MID, 0);
-
-    // attach touch screen to display
-    lvglTouchDriverXPT2046 lvglTouch(PB_15, PB_14, PB_13, PB_12, PC_5, &lvglDisplay);
 
     /* Set cursor */
     #ifdef USE_CURSOR

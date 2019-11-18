@@ -2,14 +2,18 @@ Debug/*
 Release/*
 Develop/*
 
-mbed-os/features/frameworks/coap/*
 mbed-os/features/cellular/*
 mbed-os/features/cryptocell/*
 mbed-os/features/deprecated_warnings/*
 mbed-os/features/device_key/*
 mbed-os/features/FEATURE_BLE/*
 mbed-os/features/FEATURE_BOOTLOADER/*
-mbed-os/features/frameworks/*
+mbed-os/features/frameworks/greentea-client/*
+mbed-os/features/frameworks/mbed-client-cli/*
+mbed-os/features/frameworks/mbed-client-randlib/*
+mbed-os/features/frameworks/mbed-coap/*
+mbed-os/features/frameworks/unity/*
+mbed-os/features/frameworks/utest/*
 mbed-os/features/lorawan/*
 mbed-os/features/lwipstack/*
 mbed-os/features/mbedtls/*
