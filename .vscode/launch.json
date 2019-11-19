@@ -2,6 +2,44 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "cwd": "${workspaceRoot}",
+            "executable": "./BUILD/DISCO_F769NI/GCC_ARM-DEBUG/Test-lvgl.elf",
+            "name": "Debug via JLink",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "jlink"
+        },
+        {
+            "cwd": "${workspaceRoot}",
+            "executable": "./BUILD/DISCO_F769NI/GCC_ARM-DEBUG/Test-lvgl.elf",
+            "name": "Debug via pyOCD",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "pyocd"
+        },
+        {
+            "cwd": "${workspaceRoot}",
+            "executable": "./BUILD/DISCO_F769NI/GCC_ARM-DEBUG/Test-lvgl.elf",
+            "name": "Debug via stutil",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "stutil",
+            "v1": false,
+            "showDevDebugOutput": true
+        },
+        {
+            "cwd": "${workspaceRoot}",
+            "executable": "./BUILD/DISCO_F769NI/GCC_ARM-DEBUG/Test-lvgl.elf",
+            "name": "Debug via openocd",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "configFiles": [
+                "../scripts/interface/stlink-v2-1.cfg",
+                "../scripts/target/stm32f7x.cfg"
+            ]
+        },
+        {
             "name": "C++ Launch",
             "type": "cppdbg",
             "request": "launch",
@@ -79,11 +117,7 @@
             "request": "launch",
             "servertype": "bmp",
             "device": "STM32F407VE",
-            "executable": "./BUILD/STM32F407VE_BLACK/GCC_ARM-DEBUG/Test-lvgl.elf",
-            "configFiles": [
-                "../scripts/interface/stlink-v2-1.cfg",
-                "../scripts/target/stm32f4x_stlink.cfg"
-            ]
+            "executable": "./BUILD/STM32F407VE_BLACK/GCC_ARM-DEBUG/Test-lvgl.elf"
         },
         {
             "cwd": "${workspaceRoot}",
@@ -94,11 +128,7 @@
             "request": "launch",
             "servertype": "bmp",
             "device": "STM32F407VE",
-            "executable": "./BUILD/STM32F407VE_BLACK/GCC_ARM-RELEASE/Test-lvgl.elf",
-            "configFiles": [
-                "../scripts/interface/stlink-v2-1.cfg",
-                "../scripts/target/stm32f4x_stlink.cfg"
-            ]
+            "executable": "./BUILD/STM32F407VE_BLACK/GCC_ARM-RELEASE/Test-lvgl.elf"
         },
         {
             "cwd": "${workspaceRoot}",
@@ -109,11 +139,7 @@
             "request": "launch",
             "servertype": "bmp",
             "device": "STM32F407VE",
-            "executable": "./BUILD/STM32F407VE_BLACK/GCC_ARM-DEVELOP/Test-lvgl.elf",
-            "configFiles": [
-                "../scripts/interface/stlink-v2-1.cfg",
-                "../scripts/target/stm32f4x_stlink.cfg"
-            ]
+            "executable": "./BUILD/STM32F407VE_BLACK/GCC_ARM-DEVELOP/Test-lvgl.elf"
         }
     ]
 }
