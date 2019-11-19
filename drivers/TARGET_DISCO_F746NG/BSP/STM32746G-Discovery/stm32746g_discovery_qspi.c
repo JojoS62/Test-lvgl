@@ -2,8 +2,6 @@
   ******************************************************************************
   * @file    stm32746g_discovery_qspi.c
   * @author  MCD Application Team
-  * @version V2.0.0
-  * @date    30-December-2016
   * @brief   This file includes a standard driver for the N25Q128A QSPI
   *          memory mounted on STM32746G-Discovery board.
   @verbatim
@@ -63,6 +61,14 @@
   *
   ******************************************************************************
   */ 
+
+/* Dependencies
+- stm32f7xx_hal_qspi.c
+- stm32f7xx_hal_gpio.c
+- stm32f7xx_hal_cortex.c
+- stm32f7xx_hal_rcc_ex.h
+- n25q128a.h
+EndDependencies */
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32746g_discovery_qspi.h"

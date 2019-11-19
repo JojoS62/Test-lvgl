@@ -2,8 +2,6 @@
   ******************************************************************************
   * @file    stm32746g_discovery.c
   * @author  MCD Application Team
-  * @version V2.0.0
-  * @date    30-December-2016
   * @brief   This file provides a set of firmware functions to manage LEDs, 
   *          push-buttons and COM ports available on STM32746G-Discovery
   *          board(MB1191) from STMicroelectronics.
@@ -37,10 +35,15 @@
   ******************************************************************************
   */ 
 
+/* Dependencies
+- stm32f7xx_hal_cortex.c
+- stm32f7xx_hal_gpio.c
+- stm32f7xx_hal_uart.c
+- stm32f7xx_hal_i2c.c
+EndDependencies */
+
 /* Includes ------------------------------------------------------------------*/
 #include "stm32746g_discovery.h"
-
-void wait_ms(int ms); // MBED to replace HAL_Delay function
 
 /** @addtogroup BSP
   * @{
@@ -65,11 +68,11 @@ void wait_ms(int ms); // MBED to replace HAL_Delay function
   * @{
   */
 /**
- * @brief STM32746G DISCOVERY BSP Driver version number V2.0.0
+ * @brief STM32746G DISCOVERY BSP Driver version number V2.0.2
    */
 #define __STM32746G_DISCO_BSP_VERSION_MAIN   (0x02) /*!< [31:24] main version */
 #define __STM32746G_DISCO_BSP_VERSION_SUB1   (0x00) /*!< [23:16] sub1 version */
-#define __STM32746G_DISCO_BSP_VERSION_SUB2   (0x00) /*!< [15:8]  sub2 version */
+#define __STM32746G_DISCO_BSP_VERSION_SUB2   (0x02) /*!< [15:8]  sub2 version */
 #define __STM32746G_DISCO_BSP_VERSION_RC     (0x00) /*!< [7:0]  release candidate */
 #define __STM32746G_DISCO_BSP_VERSION         ((__STM32746G_DISCO_BSP_VERSION_MAIN << 24)\
                                              |(__STM32746G_DISCO_BSP_VERSION_SUB1 << 16)\
@@ -181,7 +184,7 @@ uint32_t BSP_GetVersion(void)
   * @brief  Configures LED on GPIO.
   * @param  Led: LED to be configured. 
   *          This parameter can be one of the following values:
-  *            @arg  LED1
+  *            @arg  DISCO_LED1
   * @retval None
   */
 void BSP_LED_Init(Led_TypeDef Led)
@@ -212,7 +215,7 @@ void BSP_LED_Init(Led_TypeDef Led)
   * @brief  DeInit LEDs.
   * @param  Led: LED to be configured. 
   *          This parameter can be one of the following values:
-  *            @arg  LED1
+  *            @arg  DISCO_LED1
   * @note Led DeInit does not disable the GPIO clock
   * @retval None
   */
@@ -236,7 +239,7 @@ void BSP_LED_DeInit(Led_TypeDef Led)
   * @brief  Turns selected LED On.
   * @param  Led: LED to be set on 
   *          This parameter can be one of the following values:
-  *            @arg  LED1
+  *            @arg  DISCO_LED1
   * @retval None
   */
 void BSP_LED_On(Led_TypeDef Led)
@@ -254,7 +257,7 @@ void BSP_LED_On(Led_TypeDef Led)
   * @brief  Turns selected LED Off. 
   * @param  Led: LED to be set off
   *          This parameter can be one of the following values:
-  *            @arg  LED1
+  *            @arg  DISCO_LED1
   * @retval None
   */
 void BSP_LED_Off(Led_TypeDef Led)
@@ -272,7 +275,7 @@ void BSP_LED_Off(Led_TypeDef Led)
   * @brief  Toggles the selected LED.
   * @param  Led: LED to be toggled
   *          This parameter can be one of the following values:
-  *            @arg  LED1
+  *            @arg  DISCO_LED1
   * @retval None
   */
 void BSP_LED_Toggle(Led_TypeDef Led)
@@ -732,8 +735,7 @@ uint16_t AUDIO_IO_Read(uint8_t Addr, uint16_t Reg)
   */
 void AUDIO_IO_Delay(uint32_t Delay)
 {
-  //HAL_Delay(Delay); // MBED
-  wait_ms(Delay); // MBED
+  HAL_Delay(Delay);
 }
 
 /********************************* LINK CAMERA ********************************/
@@ -781,8 +783,7 @@ uint8_t CAMERA_IO_Read(uint8_t Addr, uint8_t Reg)
   */
 void CAMERA_Delay(uint32_t Delay)
 {
-  //HAL_Delay(Delay); // MBED
-  wait_ms(Delay); // MBED
+  HAL_Delay(Delay);
 }
 
 /******************************** LINK I2C EEPROM *****************************/
@@ -879,8 +880,7 @@ uint8_t TS_IO_Read(uint8_t Addr, uint8_t Reg)
   */
 void TS_IO_Delay(uint32_t Delay)
 {
-  //HAL_Delay(Delay); // MBED
-  wait_ms(Delay); // MBED
+  HAL_Delay(Delay);
 }
 
 /**

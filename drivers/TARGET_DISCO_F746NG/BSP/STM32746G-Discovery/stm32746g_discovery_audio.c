@@ -2,8 +2,6 @@
   ******************************************************************************
   * @file    stm32746g_discovery_audio.c
   * @author  MCD Application Team
-  * @version V2.0.0
-  * @date    30-December-2016
   * @brief   This file provides the Audio driver for the STM32746G-Discovery board.
   @verbatim
     How To use this driver:
@@ -92,10 +90,18 @@
   ******************************************************************************
   */
 
+/* Dependencies
+- stm32746g_discovery.c
+- stm32f7xx_hal_sai.c
+- stm32f7xx_hal_dma.c
+- stm32f7xx_hal_gpio.c
+- stm32f7xx_hal_cortex.c
+- stm32f7xx_hal_rcc_ex.h
+- wm8994.c
+EndDependencies */
+
 /* Includes ------------------------------------------------------------------*/
 #include "stm32746g_discovery_audio.h"
-
-void wait_ms(int ms); // MBED to replace HAL_Delay function
 
 /** @addtogroup BSP
   * @{
@@ -149,9 +155,6 @@ uint16_t __IO AudioInVolume = DEFAULT_AUDIO_IN_VOLUME;
 /** @defgroup STM32746G_DISCOVERY_AUDIO_Private_Function_Prototypes STM32746G_DISCOVERY AUDIO Private Function Prototypes
   * @{
   */
-static void AUDIO_IN_INT_IRQHandler(void); // MBED
-static void AUDIO_IN_SAIx_DMAx_IRQHandler(void); // MBED
-static void AUDIO_OUT_SAIx_DMAx_IRQHandler(void); // MBED
 static void SAIx_Out_Init(uint32_t AudioFreq);
 static void SAIx_Out_DeInit(void);
 static void SAIx_In_Init(uint32_t SaiOutMode, uint32_t SlotActive, uint32_t AudioFreq);
@@ -326,7 +329,7 @@ uint8_t BSP_AUDIO_OUT_Stop(uint32_t Option)
     if(Option == CODEC_PDWN_HW)
     { 
       /* Wait at least 100us */
-      wait_ms(1);
+      HAL_Delay(1);
     }
     /* Return AUDIO_OK when all operations are correctly done */
     return AUDIO_OK;
@@ -602,20 +605,10 @@ __weak void BSP_AUDIO_OUT_MspInit(SAI_HandleTypeDef *hsai, void *Params)
     /* Configure the DMA Stream */
     HAL_DMA_Init(&hdma_sai_tx);      
   }
-#if ( __MBED__ == 1)
-    // Enable interrupt
-    IRQn_Type irqn = (IRQn_Type)(AUDIO_OUT_SAIx_DMAx_IRQ);
-    NVIC_ClearPendingIRQ(irqn);
-    NVIC_DisableIRQ(irqn);
-    NVIC_SetPriority(irqn, AUDIO_OUT_IRQ_PREPRIO);
-    NVIC_SetVector(irqn, (uint32_t)AUDIO_OUT_SAIx_DMAx_IRQHandler);
-    NVIC_EnableIRQ(irqn);
-
-#else
+  
   /* SAI DMA IRQ Channel configuration */
   HAL_NVIC_SetPriority(AUDIO_OUT_SAIx_DMAx_IRQ, AUDIO_OUT_IRQ_PREPRIO, 0);
   HAL_NVIC_EnableIRQ(AUDIO_OUT_SAIx_DMAx_IRQ); 
-#endif
 }
 
 /**
@@ -1012,7 +1005,7 @@ uint8_t BSP_AUDIO_IN_Stop(uint32_t Option)
     if(Option == CODEC_PDWN_HW)
     {
       /* Wait at least 100us */
-      wait_ms(1);
+      HAL_Delay(1);
     }
     /* Return AUDIO_OK when all operations are correctly done */
     return AUDIO_OK;
@@ -1195,30 +1188,12 @@ __weak void BSP_AUDIO_IN_MspInit(SAI_HandleTypeDef *hsai, void *Params)
   }
   
   /* SAI DMA IRQ Channel configuration */
-#if ( __MBED__ == 1)
-    IRQn_Type irqn = (IRQn_Type)(AUDIO_IN_SAIx_DMAx_IRQ);
-    NVIC_ClearPendingIRQ(irqn);
-    NVIC_DisableIRQ(irqn);
-    NVIC_SetPriority(irqn, AUDIO_IN_IRQ_PREPRIO);
-    NVIC_SetVector(irqn, (uint32_t)AUDIO_IN_SAIx_DMAx_IRQHandler);
-    NVIC_EnableIRQ(irqn);
-#else
   HAL_NVIC_SetPriority(AUDIO_IN_SAIx_DMAx_IRQ, AUDIO_IN_IRQ_PREPRIO, 0);
   HAL_NVIC_EnableIRQ(AUDIO_IN_SAIx_DMAx_IRQ);
-#endif
 
   /* Audio INT IRQ Channel configuration */
-#if ( __MBED__ == 1)
-    irqn = (IRQn_Type)(AUDIO_IN_INT_IRQ);
-    NVIC_ClearPendingIRQ(irqn);
-    NVIC_DisableIRQ(irqn);
-    NVIC_SetPriority(irqn, AUDIO_IN_IRQ_PREPRIO);
-    NVIC_SetVector(irqn, (uint32_t)AUDIO_IN_INT_IRQHandler);
-    NVIC_EnableIRQ(irqn);
-#else
   HAL_NVIC_SetPriority(AUDIO_IN_INT_IRQ, AUDIO_IN_IRQ_PREPRIO, 0);
   HAL_NVIC_EnableIRQ(AUDIO_IN_INT_IRQ);
-#endif
 }
 
 /**
@@ -1385,27 +1360,13 @@ static void SAIx_In_DeInit(void)
   HAL_SAI_DeInit(&haudio_in_sai);
 }
 
-#if ( __MBED__ == 1)
-/**
-  * @brief  This function handles External line 15_10 interrupt request.
-  * @param  None
-  * @retval None
-  */
-static void AUDIO_IN_INT_IRQHandler(void)
-{
-  /* Interrupt handler shared between SD_DETECT pin, USER_KEY button and touch screen interrupt */
-  if (__HAL_GPIO_EXTI_GET_IT(AUDIO_IN_INT_GPIO_PIN) != RESET)
-  {
-    HAL_GPIO_EXTI_IRQHandler(AUDIO_IN_INT_GPIO_PIN);   /* Audio Interrupt */
-  }
-}
 
 /**
   * @brief This function handles DMA2 Stream 7 interrupt request.
   * @param None
   * @retval None
   */
-static void AUDIO_IN_SAIx_DMAx_IRQHandler(void)
+void AUDIO_IN_SAIx_DMAx_IRQHandler(void) // MBED
 {
   HAL_DMA_IRQHandler(haudio_in_sai.hdmarx);
 }
@@ -1415,11 +1376,11 @@ static void AUDIO_IN_SAIx_DMAx_IRQHandler(void)
   * @param  None
   * @retval None
   */
-static void AUDIO_OUT_SAIx_DMAx_IRQHandler(void)
+void AUDIO_OUT_SAIx_DMAx_IRQHandler(void) // MBED
 {
   HAL_DMA_IRQHandler(haudio_out_sai.hdmatx);
 }
-#endif
+
 
 /**
   * @}

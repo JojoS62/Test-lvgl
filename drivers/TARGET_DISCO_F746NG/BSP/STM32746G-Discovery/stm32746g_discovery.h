@@ -2,8 +2,6 @@
   ******************************************************************************
   * @file    stm32746g_discovery.h
   * @author  MCD Application Team
-  * @version V2.0.0
-  * @date    30-December-2016
   * @brief   This file contains definitions for STM32746G_DISCOVERY's LEDs,
   *          push-buttons and COM ports hardware resources.
   ******************************************************************************
@@ -46,7 +44,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f7xx_hal.h"
-#include "cmsis_nvic.h" // MBED
    
 /** @addtogroup BSP
   * @{

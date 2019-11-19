@@ -2,8 +2,6 @@
   ******************************************************************************
   * @file    stm32746g_discovery_audio.h
   * @author  MCD Application Team
-  * @version V2.0.0
-  * @date    30-December-2016
   * @brief   This file contains the common defines and functions prototypes for
   *          the stm32746g_discovery_audio.c driver.
   ******************************************************************************

@@ -2,8 +2,6 @@
   ******************************************************************************
   * @file    stm32746g_discovery_eeprom.c
   * @author  MCD Application Team
-  * @version V2.0.0
-  * @date    30-December-2016
   * @brief   This file provides a set of functions needed to manage an I2C M24LR64 
   *          EEPROM memory.
   @verbatim
@@ -85,6 +83,11 @@
   *
   ******************************************************************************
   */
+
+/* Dependencies 
+- stm32746g_discovery.c
+EndDependencies */
+
 /* Includes ------------------------------------------------------------------*/
 #include "stm32746g_discovery_eeprom.h"
 

@@ -2,8 +2,6 @@
   ******************************************************************************
   * @file    stm32746g_discovery_sdram.c
   * @author  MCD Application Team
-  * @version V2.0.0
-  * @date    30-December-2016
   * @brief   This file includes the SDRAM driver for the MT48LC4M32B2B5-7 memory 
   *          device mounted on STM32746G-Discovery board.
   @verbatim
@@ -75,10 +73,17 @@
   ******************************************************************************
   */
 
+/* Dependencies
+- stm32f7xx_hal_sdram.c
+- stm32f7xx_ll_fmc.c
+- stm32f7xx_hal_dma.c  
+- stm32f7xx_hal_gpio.c
+- stm32f7xx_hal_cortex.c
+- stm32f7xx_hal_rcc_ex.h
+EndDependencies */
+
 /* Includes ------------------------------------------------------------------*/
 #include "stm32746g_discovery_sdram.h"
-
-void wait_ms(int ms); // MBED to replace HAL_Delay function
 
 /** @addtogroup BSP
   * @{
@@ -228,8 +233,7 @@ void BSP_SDRAM_Initialization_sequence(uint32_t RefreshCount)
 
   /* Step 2: Insert 100 us minimum delay */ 
   /* Inserted delay is equal to 1 ms due to systick time base unit (ms) */
-  //HAL_Delay(1); // MBED
-  wait_ms(1); // MBED
+  HAL_Delay(1);
     
   /* Step 3: Configure a PALL (precharge all) command */ 
   Command.CommandMode            = FMC_SDRAM_CMD_PALL;
