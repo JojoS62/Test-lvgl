@@ -20,8 +20,15 @@
  *====================*/
 
 /* Maximal horizontal and vertical resolution to support by the library.*/
-#define LV_HOR_RES_MAX          (320)
-#define LV_VER_RES_MAX          (240)
+#if defined(TARGET_STM32F407VE_BLACK)
+#  define LV_HOR_RES_MAX          (320)
+#  define LV_VER_RES_MAX          (240)
+#  define LV_COLOR_DEPTH     16
+#elif defined(TARGET_DISCO_F769NI)
+#  define LV_HOR_RES_MAX          (800)
+#  define LV_VER_RES_MAX          (472)
+#  define LV_COLOR_DEPTH     32
+#endif
 
 /* Color depth:
  * - 1:  1 byte per pixel
@@ -29,7 +36,7 @@
  * - 16: RGB565
  * - 32: ARGB8888
  */
-#define LV_COLOR_DEPTH     16
+//#define LV_COLOR_DEPTH     16
 
 /* Swap the 2 bytes of RGB565 color.
  * Useful if the display has a 8 bit interface (e.g. SPI)*/
