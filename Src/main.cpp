@@ -2,9 +2,13 @@
 #include "libs/lvgl/lvgl.h"
 
 #if defined(TARGET_STM32F407VE_BLACK)
-#include "lvglDispDriverSTM32F407VE_BLACK.h"
-#include "lvglTouchDriverXPT2046.h"
+#  include "lvglDispDriverSTM32F407VE_BLACK.h"
+#  include "lvglTouchDriverXPT2046.h"
 #elif defined(TARGET_DISCO_F746NG)
+#  include "lvglDispDriver_DISCO_F746NG.h"
+#elif defined(TARGET_DISCO_F769NI)
+#  include "lvglDispDriver_DISCO_F769NI.h"
+#  include "lvglTouchDriverDISCO_F769NI.h"
 #endif
 
 #include "libs/lvgl/lv_examples/lv_apps/demo/demo.h"
@@ -40,6 +44,10 @@ DigitalOut led2(LED2, 1);
 lvglDispSTM32F407VE_BLACK   lvglDisplay;
 lvglTouchDriverXPT2046 lvglTouch(PB_15, PB_14, PB_13, PB_12, PC_5, &lvglDisplay);
 #elif defined(TARGET_DISCO_F746NG)
+lvglDispDISCO_F746NG lvglDisplay;
+#elif defined(TARGET_DISCO_F769NI)
+lvglDispDISCO_F769NI lvglDisplay;
+lvglTouchDriverDISCO_F769NI lvglTouch(&lvglDisplay);
 #endif
 
 // Physical block device, can be any device that supports the BlockDevice API
@@ -167,7 +175,7 @@ static void lv_screen_update_task(lv_task_t* task)
 // main() runs in its own thread in the OS
 int main()
 {
-    printf("Hello from STM32F407VE\n");
+    printf("Hello from STM32F407VEx\n");
 
     // Mbed CPU perfomance measuring. Has slight impact on perfomance itself!
     //  mbed_app.json needs : 'platform.cpu-stats-enabled": true'
@@ -185,12 +193,12 @@ int main()
     #endif
 
     // start threads
-    threadIO.start(callback(threadFnIO));
-    threadUSBSerial.start(callback(threadFnUSBSerial));
+    //threadIO.start(callback(threadFnIO));
+    //threadUSBSerial.start(callback(threadFnUSBSerial));
     tickerLvgl.attach_us(&fnLvTicker, 2000);
 
     //lv_tutorial_hello_world();
-    //demo_create();
+    demo_create();
     //lv_test_theme_2();
     //benchmark_create();
 
@@ -200,8 +208,12 @@ int main()
 
     // main screen
     //lvParameterScreen();
-    lv_tutorial_image();
+    //lv_tutorial_image();
 
-    // simple main loop, should handle events
+    // simple main loop, should handle event;
+    while(1) {
+        led1 = !led1;
+        sleepWithLvHandler(50);
+    }
     sleepWithLvHandler(0); // sleep forever and call lv_handler
 }
