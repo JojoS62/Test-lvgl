@@ -21,13 +21,13 @@
  * SOFTWARE.
  */
 
-#include "lvglDispDriver_DISCO_F769NI.h"
+#include "LVGLDispDriver_DISCO_F769NI.h"
 
 static LCD_DISCO_F769NI lcd;
 
 
-lvglDispDISCO_F769NI::lvglDispDISCO_F769NI(uint32_t nBufferRows) :
-    lvglDispDriverBase(LV_HOR_RES_MAX, LV_VER_RES_MAX),
+LVGLDispDISCO_F769NI::LVGLDispDISCO_F769NI(uint32_t nBufferRows) :
+    LVGLDispDriverBase(LV_HOR_RES_MAX, LV_VER_RES_MAX),
     _nBufferRows(nBufferRows)
 {
     lcd.Clear(LCD_COLOR_BLUE);
@@ -38,7 +38,7 @@ lvglDispDISCO_F769NI::lvglDispDISCO_F769NI(uint32_t nBufferRows) :
     init();
 }
 
-void lvglDispDISCO_F769NI::init()
+void LVGLDispDISCO_F769NI::init()
 {
     size_t bufferSize = LV_HOR_RES_MAX * _nBufferRows;
 
@@ -60,7 +60,7 @@ void lvglDispDISCO_F769NI::init()
     lcd.Clear(LCD_COLOR_RED);
 }
 
-void lvglDispDISCO_F769NI::disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p)
+void LVGLDispDISCO_F769NI::disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p)
 {
     //DrawBitmap(uint32_t Xpos, uint32_t Ypos, uint8_t *pbmp);
     int32_t x;

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-#include "lvglTouchDriverDISCO_F769NI.h"
+#include "LVGLTouchDriverDISCO_F769NI.h"
 
 #include "TS_DISCO_F769NI.h"
 
@@ -30,8 +30,8 @@ TS_DISCO_F769NI ts;
  *      DEFINES
  *********************/
 
-lvglTouchDriverDISCO_F769NI::lvglTouchDriverDISCO_F769NI(lvglDispDriverBase *lvglDispDriver) :
-    lvglInputDriverBase(lvglDispDriver)
+LVGLTouchDriverDISCO_F769NI::LVGLTouchDriverDISCO_F769NI(LVGLDispDriverBase *lvglDispDriver) :
+    LVGLInputDriverBase(lvglDispDriver)
 {
     ts.Init(800, 472);
 
@@ -42,7 +42,7 @@ lvglTouchDriverDISCO_F769NI::lvglTouchDriverDISCO_F769NI(lvglDispDriverBase *lvg
     _my_indev = lv_indev_drv_register(&_indev_drv);
 }
 
-bool lvglTouchDriverDISCO_F769NI::read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data)
+bool LVGLTouchDriverDISCO_F769NI::read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data)
 {
     TS_StateTypeDef TS_State;
 

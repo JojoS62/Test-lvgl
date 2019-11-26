@@ -21,18 +21,17 @@
  * SOFTWARE.
  */
 
-#ifndef __lvglDispDriver_DISCO_F746NG_h__
-#define __lvglDispDriver_DISCO_F746NG_h__
+#ifndef __LVGLDispDriver_DISCO_F746NG_h__
+#define __LVGLDispDriver_DISCO_F746NG_h__
 
-#include "lvglDispDriverBase.h"
+#include "LVGLDispDriverBase.h"
 #include "LCD_DISCO_F746NG.h"
 
-class lvglDispDISCO_F746NG : public lvglDispDriverBase {
+class LVGLDispDISCO_F746NG : public LVGLDispDriver {
 public:
-    lvglDispDISCO_F746NG(uint32_t nBufferRows = 10);
+    LVGLDispDISCO_F746NG(uint32_t nBufferRows = 40);
 
 private:
-    LCD_DISCO_F746NG lcd;
     uint32_t _nBufferRows;
     void init();
     static void disp_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p);

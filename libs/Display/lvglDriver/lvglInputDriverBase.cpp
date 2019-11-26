@@ -22,7 +22,7 @@
 
 #include "lvglInputDriverBase.h"
 
-lvglInputDriverBase::lvglInputDriverBase(lvglDispDriverBase* disp) 
+LVGLInputDriver::LVGLInputDriver(LVGLDispDriver* disp) 
 {
     lv_indev_drv_init(&_indev_drv);         // Basic initialization
     _lvglDispDriverBase = disp;                 // attach display, null is allowed for default display

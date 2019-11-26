@@ -20,20 +20,20 @@
  * SOFTWARE.
  */
 
-#ifndef __lvglTouchDriverXPT2046_h__
-#define __lvglTouchDriverXPT2046_h__
+#ifndef __LVGLTouchDriverXPT2046_h__
+#define __LVGLTouchDriverXPT2046_h__
 
-#include "lvglInputDriverBase.h"
+#include "LVGLInputDriverBase.h"
 
 #define XPT2046_AVG         4
 
-class lvglTouchDriverXPT2046 : public lvglInputDriverBase {
+class LVGLTouchDriverXPT2046 : public LVGLInputDriver {
 public:
     /*
         construct touch driver from SPI pins
         Disp is optional, if null then lvgl will use default display
     */
-    lvglTouchDriverXPT2046(PinName mosi, PinName miso, PinName sclk, PinName ssel, PinName penIRQ, lvglDispDriverBase *lvglDispDriver = nullptr);
+    LVGLTouchDriverXPT2046(PinName mosi, PinName miso, PinName sclk, PinName ssel, PinName penIRQ, LVGLDispDriver *lvglDispDriver = nullptr);
 
 private:
     SPI _spi;

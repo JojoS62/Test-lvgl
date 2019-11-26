@@ -28,18 +28,31 @@
 #include "lvglDispDriverBase.h"
 
 
-class lvglInputDriverBase {
+class LVGLInputDriver {
 public:
-        lv_disp_t* getLVDisp() { return _lvglDispDriverBase != nullptr ?_lvglDispDriverBase->getLVDisp() : nullptr; };
-        lv_indev_drv_t* getLVInDev() { return &_indev_drv; };
+    lv_disp_t* getLVDisp() { return _lvglDispDriverBase != nullptr ?_lvglDispDriverBase->getLVDisp() : nullptr; };
+    lv_indev_drv_t* getLVInDev() { return &_indev_drv; };
+
+    /** Return the default input touchscreen device
+     *
+     * Returns the default display driver based on the configuration JSON.
+     * Use the components in target.json or application config to change
+     * the default input touchscreen device.
+     *
+     * An application can override all target settings by implementing
+     * lvglInputDriver::get_default_instance() - the default
+     * definition is weak, and calls get_target_default_instance().
+    */
+    static LVGLInputDriver *get_target_default_instance_touchdrv(LVGLDispDriver *disp = nullptr);
+
 
 protected:
-    lvglInputDriverBase(lvglDispDriverBase *disp = nullptr);
+    LVGLInputDriver(LVGLDispDriver *disp = nullptr);
 
     virtual void init() {};
 
     lv_indev_drv_t _indev_drv;
-    lvglDispDriverBase*  _lvglDispDriverBase;
+    LVGLDispDriver*  _lvglDispDriverBase;
     lv_indev_t *_my_indev;
 };
 

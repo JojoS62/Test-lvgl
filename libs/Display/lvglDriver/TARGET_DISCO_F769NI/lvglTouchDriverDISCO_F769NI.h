@@ -20,18 +20,18 @@
  * SOFTWARE.
  */
 
-#ifndef __lvglTouchDriverDISCO_F769NI_h__
-#define __lvglTouchDriverDISCO_F769NI_h__
+#ifndef __LVGLTouchDriverDISCO_F769NI_h__
+#define __LVGLTouchDriverDISCO_F769NI_h__
 
-#include "lvglInputDriverBase.h"
+#include "LVGLInputDriverBase.h"
 
-class lvglTouchDriverDISCO_F769NI : public lvglInputDriverBase {
+class LVGLTouchDriverDISCO_F769NI : public LVGLInputDriverBase {
 public:
     /*
         construct touch driver from SPI pins
         Disp is optional, if null then lvgl will use default display
     */
-    lvglTouchDriverDISCO_F769NI(lvglDispDriverBase *lvglDispDriver = nullptr);
+    LVGLTouchDriverDISCO_F769NI(LVGLDispDriverBase *lvglDispDriver = nullptr);
 
 private:
 

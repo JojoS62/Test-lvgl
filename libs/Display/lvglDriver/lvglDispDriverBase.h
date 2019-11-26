@@ -27,12 +27,26 @@
 #include "lvgl.h"
 
 
-class lvglDispDriverBase {
+class LVGLDispDriver {
 public:
-        lv_disp_t* getLVDisp() { return _disp; };
+    LVGLDispDriver();
+    lv_disp_t* getLVDisp() { return _disp; };
+
+    /** Return the default diplay device
+     *
+     * Returns the default display driver based on the configuration JSON.
+     * Use the components in target.json or application config to change
+     * the default display device.
+     *
+     * An application can override all target settings by implementing
+     * lvglDispDriver::get_default_instance() - the default
+     * definition is weak, and calls get_target_default_instance().
+    */
+    static LVGLDispDriver *get_target_default_instance();
+
 
 protected:
-    lvglDispDriverBase(uint32_t horRes, uint32_t verRes);
+    LVGLDispDriver(uint32_t horRes, uint32_t verRes);
 
     virtual void init() {};
 

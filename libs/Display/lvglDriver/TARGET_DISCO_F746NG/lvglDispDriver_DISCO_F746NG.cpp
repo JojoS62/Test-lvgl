@@ -21,22 +21,24 @@
  * SOFTWARE.
  */
 
-#include "lvglDispDriver_DISCO_F746NG.h"
+#include "LVGLDispDriver_DISCO_F746NG.h"
 
-lvglDispDISCO_F746NG::lvglDispDISCO_F746NG(uint32_t nBufferRows) :
-    lvglDispDriverBase(480, 272),
+static LCD_DISCO_F746NG lcd;
+
+LVGLDispDISCO_F746NG::LVGLDispDISCO_F746NG(uint32_t nBufferRows) :
+    LVGLDispDriver(480, 272),
     _nBufferRows(nBufferRows)
 {
     lcd.Init();
     lcd.Clear(LCD_COLOR_BLUE);
-    lcd.SetBackColor(LCD_COLOR_BLUE);
-    lcd.SetTextColor(LCD_COLOR_WHITE);
-    lcd.DisplayStringAt(0, LINE(5), (uint8_t *)"DISCOVERY STM32F746NG", CENTER_MODE);
+    //lcd.SetBackColor(LCD_COLOR_BLUE);
+    //lcd.SetTextColor(LCD_COLOR_WHITE);
+    //lcd.DisplayStringAt(0, LINE(5), (uint8_t *)"DISCOVERY STM32F746NG", CENTER_MODE);
 
     init();
 }
 
-void lvglDispDISCO_F746NG::init()
+void LVGLDispDISCO_F746NG::init()
 {
     size_t bufferSize = LV_HOR_RES_MAX * _nBufferRows;
 
@@ -57,13 +59,13 @@ void lvglDispDISCO_F746NG::init()
     _disp = lv_disp_drv_register(&_disp_drv);
 }
 
-void lvglDispDISCO_F746NG::disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p)
+void LVGLDispDISCO_F746NG::disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p)
 {
     int32_t x;
     int32_t y;
     for (y = area->y1; y <= area->y2; y++) {
         for (x = area->x1; x <= area->x2; x++) {
-//            ili9341_fsmc_writeData(*((uint16_t *)color_p));
+            lcd.DrawPixel(x, y, *((uint32_t *)color_p));
             color_p++;
         }
     }
@@ -71,4 +73,10 @@ void lvglDispDISCO_F746NG::disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *
     /* IMPORTANT!!!
      * Inform the graphics library that you are ready with the flushing*/
     lv_disp_flush_ready(disp_drv);
+}
+
+MBED_WEAK LVGLDispDriver *LVGLDispDriver::get_target_default_instance()
+{
+    static LVGLDispDISCO_F746NG drv;
+    return &drv;
 }

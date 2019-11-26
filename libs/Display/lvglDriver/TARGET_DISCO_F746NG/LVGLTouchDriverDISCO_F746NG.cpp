@@ -1,4 +1,3 @@
-
 /* lvglDriver for Mbed
  * Copyright (c) 2019 Johannes Stratmann
  *
@@ -21,25 +20,48 @@
  * SOFTWARE.
  */
 
-#ifndef __LVGLDispDriver_DISCO_F769NI_h__
-#define __LVGLDispDriver_DISCO_F769NI_h__
+#include "LVGLTouchDriverDISCO_F746NG.h"
 
-#include "LVGLDispDriverBase.h"
-#include "LCD_DISCO_F769NI.h"
+#include "TS_DISCO_F746NG.h"
 
-class LVGLDispDISCO_F769NI : public LVGLDispDriverBase {
-public:
-    LVGLDispDISCO_F769NI(uint32_t nBufferRows = 10);
+TS_DISCO_F746NG ts;
 
-private:
-    uint32_t _nBufferRows;
-    void init();
-    static void disp_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p);
+/*********************
+ *      DEFINES
+ *********************/
 
-    void controllerInit();
+LVGLTouchDriverDISCO_F746NG::LVGLTouchDriverDISCO_F746NG(LVGLDispDriver *lvglDispDriver) :
+    LVGLInputDriver(lvglDispDriver)
+{
+    ts.Init(800, 472);
 
-    lv_disp_buf_t _disp_buf_1;
-    lv_color_t *_buf1_1;     // display working buffer
-};
+    _indev_drv.type = LV_INDEV_TYPE_POINTER; // touchpad
+    _indev_drv.read_cb = read;
+    _indev_drv.user_data = this;
+    /* Register the driver in LittlevGL and save the created input device object*/
+    _my_indev = lv_indev_drv_register(&_indev_drv);
+}
 
-#endif
+bool LVGLTouchDriverDISCO_F746NG::read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data)
+{
+    TS_StateTypeDef TS_State;
+
+    ts.GetState(&TS_State);
+
+    if (TS_State.touchDetected) {
+        data->state = LV_INDEV_STATE_PR;
+    } else {
+        data->state = LV_INDEV_STATE_REL;
+    }
+
+    data->point.x = TS_State.touchX[0];
+    data->point.y = TS_State.touchY[0];
+
+    return false;
+}
+
+MBED_WEAK LVGLInputDriver *LVGLInputDriver::get_target_default_instance_touchdrv(LVGLDispDriver *disp)
+{
+    static LVGLTouchDriverDISCO_F746NG drv(disp);
+    return &drv;
+}

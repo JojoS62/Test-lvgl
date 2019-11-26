@@ -21,7 +21,7 @@
  * SOFTWARE.
  */
 
-#include "lvglDispDriverSTM32F407VE_BLACK.h"
+#include "LVGLDispDriverSTM32F407VE_BLACK.h"
 #include "ili9341_fsmc.h"
 
 /*
@@ -102,8 +102,8 @@ static int fsmc_lcd_init()
     return status;
 };
 
-lvglDispSTM32F407VE_BLACK::lvglDispSTM32F407VE_BLACK(uint32_t nBufferRows) :
-    lvglDispDriverBase(320, 240),
+LVGLDispSTM32F407VE_BLACK::LVGLDispSTM32F407VE_BLACK(uint32_t nBufferRows) :
+    LVGLDispDriver(320, 240),
     _nBufferRows(nBufferRows)
 {
     // low level hardware init
@@ -116,7 +116,7 @@ lvglDispSTM32F407VE_BLACK::lvglDispSTM32F407VE_BLACK(uint32_t nBufferRows) :
     init();
 }
 
-void lvglDispSTM32F407VE_BLACK::init()
+void LVGLDispSTM32F407VE_BLACK::init()
 {
     size_t bufferSize = LV_HOR_RES_MAX * _nBufferRows;
 
@@ -137,7 +137,7 @@ void lvglDispSTM32F407VE_BLACK::init()
     _disp = lv_disp_drv_register(&_disp_drv);
 }
 
-void lvglDispSTM32F407VE_BLACK::disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p)
+void LVGLDispSTM32F407VE_BLACK::disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p)
 {
     int32_t x;
     int32_t y;
@@ -153,4 +153,10 @@ void lvglDispSTM32F407VE_BLACK::disp_flush(lv_disp_drv_t *disp_drv, const lv_are
     /* IMPORTANT!!!
      * Inform the graphics library that you are ready with the flushing*/
     lv_disp_flush_ready(disp_drv);
+}
+
+MBED_WEAK LVGLDispDriver *LVGLDispDriver::get_target_default_instance()
+{
+    static LVGLDispSTM32F407VE_BLACK drv;
+    return &drv;
 }

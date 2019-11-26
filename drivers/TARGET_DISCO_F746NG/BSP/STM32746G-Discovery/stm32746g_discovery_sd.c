@@ -82,7 +82,7 @@
 - stm32f7xx_hal_cortex.c
 - stm32f7xx_hal_rcc_ex.h
 EndDependencies */
-
+#if 0
 /* Includes ------------------------------------------------------------------*/
 #include "stm32746g_discovery_sd.h"
 
@@ -604,3 +604,4 @@ __weak void BSP_SD_ReadCpltCallback(void)
   */
  
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+#endif

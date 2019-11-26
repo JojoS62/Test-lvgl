@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-#include "lvglTouchDriverXPT2046.h"
+#include "LVGLTouchDriverXPT2046.h"
 
 /*********************
  *      DEFINES
@@ -40,10 +40,10 @@
 #define XPT2046_X_INV       1
 #define XPT2046_Y_INV       1
 
-lvglTouchDriverXPT2046::lvglTouchDriverXPT2046(PinName mosi, PinName miso, PinName sclk, PinName ssel, 
+LVGLTouchDriverXPT2046::LVGLTouchDriverXPT2046(PinName mosi, PinName miso, PinName sclk, PinName ssel, 
                                                PinName penIRQ, 
-                                               lvglDispDriverBase *lvglDispDriver) :
-    lvglInputDriverBase(lvglDispDriver),
+                                               LVGLDispDriver *lvglDispDriver) :
+    LVGLInputDriver(lvglDispDriver),
     _spi(mosi, miso, sclk),
     _irqTouch(penIRQ),
     _csTouch(ssel, 1)
@@ -63,14 +63,14 @@ lvglTouchDriverXPT2046::lvglTouchDriverXPT2046(PinName mosi, PinName miso, PinNa
     _my_indev = lv_indev_drv_register(&_indev_drv);
 }
 
-bool lvglTouchDriverXPT2046::read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data)
+bool LVGLTouchDriverXPT2046::read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data)
 {
     static int16_t last_x = 0;
     static int16_t last_y = 0;
     
     int16_t x = 0;
     int16_t y = 0;
-    lvglTouchDriverXPT2046 *me = (lvglTouchDriverXPT2046 *)indev_drv->user_data;
+    LVGLTouchDriverXPT2046 *me = (LVGLTouchDriverXPT2046 *)indev_drv->user_data;
     
     uint8_t irq = (me->_irqTouch).read();
 
@@ -119,7 +119,7 @@ bool lvglTouchDriverXPT2046::read(lv_indev_drv_t * indev_drv, lv_indev_data_t * 
     return false;
 }
 
-void lvglTouchDriverXPT2046::corr(int16_t * x, int16_t * y)
+void LVGLTouchDriverXPT2046::corr(int16_t * x, int16_t * y)
 {
 #if XPT2046_XY_SWAP != 0
     int16_t swap_tmp;
@@ -152,7 +152,7 @@ void lvglTouchDriverXPT2046::corr(int16_t * x, int16_t * y)
 }
 
 
-void lvglTouchDriverXPT2046::avg(int16_t * x, int16_t * y)
+void LVGLTouchDriverXPT2046::avg(int16_t * x, int16_t * y)
 {
     /*Shift out the oldest data*/
     uint8_t i;

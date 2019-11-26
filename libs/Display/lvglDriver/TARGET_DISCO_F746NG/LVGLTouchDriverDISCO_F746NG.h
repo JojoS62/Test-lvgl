@@ -1,4 +1,3 @@
-
 /* lvglDriver for Mbed
  * Copyright (c) 2019 Johannes Stratmann
  *
@@ -21,25 +20,22 @@
  * SOFTWARE.
  */
 
-#ifndef __LVGLDispDriver_DISCO_F769NI_h__
-#define __LVGLDispDriver_DISCO_F769NI_h__
+#ifndef __LVGLTouchDriverDISCO_F746NG_h__
+#define __LVGLTouchDriverDISCO_F746NG_h__
 
-#include "LVGLDispDriverBase.h"
-#include "LCD_DISCO_F769NI.h"
+#include "LVGLInputDriverBase.h"
 
-class LVGLDispDISCO_F769NI : public LVGLDispDriverBase {
+class LVGLTouchDriverDISCO_F746NG : public LVGLInputDriver {
 public:
-    LVGLDispDISCO_F769NI(uint32_t nBufferRows = 10);
+    /*
+        construct touch driver from SPI pins
+        Disp is optional, if null then lvgl will use default display
+    */
+    LVGLTouchDriverDISCO_F746NG(LVGLDispDriver *lvglDispDriver = nullptr);
 
 private:
-    uint32_t _nBufferRows;
-    void init();
-    static void disp_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p);
 
-    void controllerInit();
-
-    lv_disp_buf_t _disp_buf_1;
-    lv_color_t *_buf1_1;     // display working buffer
+    static bool read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data);
 };
 
 #endif

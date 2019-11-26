@@ -21,8 +21,9 @@
  */
 
 #include "lvglDispDriverBase.h"
+#include "lvglInputDriverBase.h"
 
-lvglDispDriverBase::lvglDispDriverBase(uint32_t horRes, uint32_t verRes)
+LVGLDispDriver::LVGLDispDriver(uint32_t horRes, uint32_t verRes)
 {
     _disp = nullptr;
     
@@ -36,3 +37,10 @@ lvglDispDriverBase::lvglDispDriverBase(uint32_t horRes, uint32_t verRes)
     _disp_drv.hor_res = horRes;
     _disp_drv.ver_res = verRes;
 }
+
+#if 0
+MBED_WEAK LVGLDispDriver *LVGLDispDriver::get_target_default_instance()
+{
+    return nullptr;
+}
+#endif

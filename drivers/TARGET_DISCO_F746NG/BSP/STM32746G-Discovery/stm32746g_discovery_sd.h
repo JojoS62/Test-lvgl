@@ -33,7 +33,7 @@
   *
   ******************************************************************************
   */ 
-
+#if 0
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __STM32746G_DISCOVERY_SD_H
 #define __STM32746G_DISCOVERY_SD_H
@@ -159,3 +159,4 @@ void    BSP_SD_ReadCpltCallback(void);
 #endif /* __STM32746G_DISCOVERY_SD_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+#endif

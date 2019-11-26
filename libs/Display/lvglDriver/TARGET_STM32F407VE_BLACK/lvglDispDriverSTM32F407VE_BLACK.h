@@ -21,14 +21,14 @@
  * SOFTWARE.
  */
 
-#ifndef __lvglDispDriverSTM32F407VE_BLACK_h__
-#define __lvglDispDriverSTM32F407VE_BLACK_h__
+#ifndef __LVGLDispDriverSTM32F407VE_BLACK_h__
+#define __LVGLDispDriverSTM32F407VE_BLACK_h__
 
-#include "lvglDispDriverBase.h"
+#include "LVGLDispDriverBase.h"
 
-class lvglDispSTM32F407VE_BLACK : public lvglDispDriverBase {
+class LVGLDispSTM32F407VE_BLACK : public LVGLDispDriver {
 public:
-    lvglDispSTM32F407VE_BLACK(uint32_t nBufferRows = 10);
+    LVGLDispSTM32F407VE_BLACK(uint32_t nBufferRows = 10);
 
 private:
     uint32_t _nBufferRows;
