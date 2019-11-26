@@ -19,12 +19,16 @@
             "SERIAL_FC"
         ],
         "macros_add": ["USBSTM_HAL_UNSUPPORTED"],
-        "overrides": {"lse_available": 0},
+        "overrides": {
+            "lse_available": 0,
+            "network-default-interface-type": "ETHERNET"
+        },
         "device_has_add": [
             "ANALOGOUT", 
             "MPU", 
             "TRNG", 
             "FLASH",
+            "EMAC",
             "USBDEVICE"
         ],
         "release_versions": ["2", "5"],
