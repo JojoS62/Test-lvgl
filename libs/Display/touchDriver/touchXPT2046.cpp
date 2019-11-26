@@ -59,7 +59,6 @@ bool readTouchXPT2046(lv_indev_drv_t * indev_drv, lv_indev_data_t * data)
 {
     static int16_t last_x = 0;
     static int16_t last_y = 0;
-    bool valid = true;
 
     int16_t x = 0;
     int16_t y = 0;
