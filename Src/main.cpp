@@ -1,15 +1,10 @@
+#if 1
 #include "mbed.h"
 #include "libs/lvgl/lvgl.h"
 
-#if defined(TARGET_STM32F407VE_BLACK)
-#  include "lvglDispDriverSTM32F407VE_BLACK.h"
-#  include "lvglTouchDriverXPT2046.h"
-#elif defined(TARGET_DISCO_F746NG)
-#  include "lvglDispDriver_DISCO_F746NG.h"
-#elif defined(TARGET_DISCO_F769NI)
-#  include "lvglDispDriver_DISCO_F769NI.h"
-#  include "lvglTouchDriverDISCO_F769NI.h"
-#endif
+
+#include "lvglDispDriverBase.h"
+#include "lvglInputDriverBase.h"
 
 #include "libs/lvgl/lv_examples/lv_apps/demo/demo.h"
 #include "libs/lvgl/lv_examples/lv_tests/lv_test_theme/lv_test_theme_2.h"
@@ -23,14 +18,27 @@
 
 #include "USBSerial.h"
 
+#if 0
+#include "EthernetInterface.h"
+#include "TCPSocket.h"
+#include <stdio.h>
+#include <string>
 
-#if !defined(MBED_CPU_STATS_ENABLED) || !defined(DEVICE_LPTICKER) || !defined(DEVICE_SLEEP)
-#error [NOT_SUPPORTED] test not supported
+#define IP      "192.168.1.181"
+#define GATEWAY "192.168.1.1"
+#define NETMASK "255.255.255.0"
+#define PORT    80
+
+EthernetInterface*  net;
+TCPSocket           server;
+TCPSocket*          clientSocket;
 #endif
 
 
-Thread threadIO;
-Thread threadUSBSerial;
+#if !defined(MBED_CPU_STATS_ENABLED) || !defined(DEVICE_LPTICKER) || !defined(DEVICE_SLEEP)
+//#error [NOT_SUPPORTED] test not supported
+#endif
+
 Ticker tickerLvgl;
 
 #define LED_OFF (1)
@@ -39,21 +47,12 @@ Ticker tickerLvgl;
 DigitalOut led1(LED1, 1); // onboard LEDs
 DigitalOut led2(LED2, 1);
 
-// graphics class, used for initializing tft
-#if defined(TARGET_STM32F407VE_BLACK)
-lvglDispSTM32F407VE_BLACK   lvglDisplay;
-lvglTouchDriverXPT2046 lvglTouch(PB_15, PB_14, PB_13, PB_12, PC_5, &lvglDisplay);
-#elif defined(TARGET_DISCO_F746NG)
-lvglDispDISCO_F746NG lvglDisplay;
-#elif defined(TARGET_DISCO_F769NI)
-lvglDispDISCO_F769NI lvglDisplay;
-lvglTouchDriverDISCO_F769NI lvglTouch(&lvglDisplay);
-#endif
-
+#if 1
 // Physical block device, can be any device that supports the BlockDevice API
 SDIOBlockDevice bd;
 // File system declaration
 FATFileSystem fs("sda", &bd);
+#endif
 
 //
 // calc cpu usage
@@ -78,21 +77,6 @@ void calc_cpu_usage()
 }
 
 //
-// test USBSerial communication
-// 
-
-void threadFnUSBSerial()
-{
-    USBSerial usbSerial;     // serial USB device, blocking connect
-    usbSerial.printf("USBSerial connected.\r");
-
-    while(1) {
-        usbSerial.printf("Idle: %4d Usage: %4d \n", idle, cpuUsage);
-        ThisThread::sleep_for(SAMPLE_TIME);
-    }
-}
-
-//
 // lv Ticker, executed in interrupt context
 //
 
@@ -101,40 +85,6 @@ void fnLvTicker()
     lv_tick_inc(2); /*Tell LittlevGL that 2 milliseconds were elapsed*/
 }
 
-//
-// IO Thread
-// control tft backlight by button K1
-
-void threadFnIO()
-{
-    DigitalIn inButtonK1(PE_3, PullUp);
-
-    PwmOut outTftBL(PB_1);
-    float delta = 0.1f;
-
-    outTftBL.period_ms(1); // PWM freq 1kHz
-    outTftBL = 1.0f;       // Backlight init with 100 %
-    int btnK1Old = inButtonK1.read();
-
-    while (true) {
-        int btnK1 = inButtonK1.read();
-
-        if ((btnK1 != btnK1Old) && (btnK1 == 0)) {
-            //outTftBL = !outTftBL;
-            if (outTftBL > 0.9f) {
-                delta = -0.1f;
-            } else if (outTftBL < 0.1f) {
-                delta = 0.1f;
-            }
-
-            outTftBL = outTftBL + delta;
-        }
-
-        btnK1Old = btnK1;
-
-        ThisThread::sleep_for(10);
-    }
-}
 
 //
 //  sleep and call lvHandler cyclic
@@ -171,14 +121,20 @@ static void lv_screen_update_task(lv_task_t* task)
 	}
 }
 
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
 
 // main() runs in its own thread in the OS
 int main()
 {
-    printf("Hello from STM32F407VEx\n");
+    printf("Hello from "  TOSTRING(TARGET_NAME) "\n");
+    printf("Mbed OS version: %d.%d.%d\n\n", MBED_MAJOR_VERSION, MBED_MINOR_VERSION, MBED_PATCH_VERSION);
+
+    LVGLDispDriver*  lvglDisplay      = LVGLDispDriver::get_target_default_instance();
+    LVGLInputDriver*  lvglTouchScreen = LVGLInputDriver::get_target_default_instance_touchdrv(lvglDisplay);
 
     // Mbed CPU perfomance measuring. Has slight impact on perfomance itself!
-    //  mbed_app.json needs : 'platform.cpu-stats-enabled": true'
+    //  mbed_app.json needs : "platform.cpu-stats-enabled": true"
     EventQueue *stats_queue = mbed_event_queue();
     stats_queue->call_every(SAMPLE_TIME, calc_cpu_usage);
 
@@ -193,27 +149,25 @@ int main()
     #endif
 
     // start threads
-    //threadIO.start(callback(threadFnIO));
-    //threadUSBSerial.start(callback(threadFnUSBSerial));
     tickerLvgl.attach_us(&fnLvTicker, 2000);
 
+    // display splash screen for a few seconds
+    lvSplashScreen();
+    sleepWithLvHandler(4000 /* ms */);
+
+    //    main screen
+    //lvParameterScreen();
+    //lv_tutorial_image();
     //lv_tutorial_hello_world();
     demo_create();
     //lv_test_theme_2();
     //benchmark_create();
 
-    // display splash screen for 2000 ms
-    //lvSplashScreen();
-    //sleepWithLvHandler(2000);
-
-    // main screen
-    //lvParameterScreen();
-    //lv_tutorial_image();
 
     // simple main loop, should handle event;
     while(1) {
         led1 = !led1;
         sleepWithLvHandler(50);
     }
-    sleepWithLvHandler(0); // sleep forever and call lv_handler
 }
+#endif
