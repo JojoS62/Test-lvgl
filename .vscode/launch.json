@@ -3,7 +3,7 @@
     "configurations": [
         {
             "cwd": "${workspaceRoot}",
-            "executable": "./BUILD/DISCO_F769NI/GCC_ARM-DEBUG/Test-lvgl.elf",
+            "executable": "./BUILD/DISCO_F769NI/GCC_ARM-DEBUG/${workspaceFolderBasename}.elf",
             "name": "Debug via JLink",
             "request": "launch",
             "type": "cortex-debug",
@@ -11,7 +11,7 @@
         },
         {
             "cwd": "${workspaceRoot}",
-            "executable": "./BUILD/DISCO_F769NI/GCC_ARM-DEBUG/Test-lvgl.elf",
+            "executable": "./BUILD/DISCO_F746NG/GCC_ARM-DEBUG/${workspaceFolderBasename}.elf",
             "name": "Debug via pyOCD",
             "request": "launch",
             "type": "cortex-debug",
@@ -19,17 +19,17 @@
         },
         {
             "cwd": "${workspaceRoot}",
-            "executable": "./BUILD/DISCO_F769NI/GCC_ARM-DEBUG/Test-lvgl.elf",
+            "executable": "./BUILD/DISCO_F769NI/GCC_ARM-DEBUG/${workspaceFolderBasename}.elf",
             "name": "Debug via stutil",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "stutil",
             "v1": false,
-            "showDevDebugOutput": true
+            "showDevDebugOutput": false
         },
         {
             "cwd": "${workspaceRoot}",
-            "executable": "./BUILD/DISCO_F769NI/GCC_ARM-DEBUG/Test-lvgl.elf",
+            "executable": "./BUILD/DISCO_F746NG/GCC_ARM-DEBUG/${workspaceFolderBasename}.elf",
             "name": "Debug via openocd",
             "request": "launch",
             "type": "cortex-debug",
@@ -38,6 +38,39 @@
                 "../scripts/interface/stlink-v2-1.cfg",
                 "../scripts/target/stm32f7x.cfg"
             ]
+        },
+        {
+            "cwd": "${workspaceRoot}",
+            "name": "debug Cortex-Debug STM32Black",
+            "BMPGDBSerialPort": "//./COM12",
+            "interface": "swd",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "bmp",
+            "device": "STM32F407VE",
+            "executable": "./BUILD/STM32F407VE_BLACK/GCC_ARM-DEBUG/${workspaceFolderBasename}.elf"
+        },
+        {
+            "cwd": "${workspaceRoot}",
+            "name": "release Cortex-Debug STM32Black",
+            "BMPGDBSerialPort": "//./COM12",
+            "interface": "swd",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "bmp",
+            "device": "STM32F407VE",
+            "executable": "./BUILD/STM32F407VE_BLACK/GCC_ARM-RELEASE/${workspaceFolderBasename}.elf"
+        },
+        {
+            "cwd": "${workspaceRoot}",
+            "name": "develop Cortex-Debug STM32Black",
+            "BMPGDBSerialPort": "//./COM12",
+            "interface": "swd",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "bmp",
+            "device": "STM32F407VE",
+            "executable": "./BUILD/STM32F407VE_BLACK/GCC_ARM-DEVELOP/${workspaceFolderBasename}.elf"
         },
         {
             "name": "C++ Launch",
@@ -107,39 +140,6 @@
                 "../scripts/interface/stlink-v2-1.cfg",
                 "../scripts/target/stm32f4x_stlink.cfg"
             ]
-        },
-        {
-            "cwd": "${workspaceRoot}",
-            "name": "debug Cortex-Debug STM32Black",
-            "BMPGDBSerialPort": "//./COM12",
-            "interface": "swd",
-            "type": "cortex-debug",
-            "request": "launch",
-            "servertype": "bmp",
-            "device": "STM32F407VE",
-            "executable": "./BUILD/STM32F407VE_BLACK/GCC_ARM-DEBUG/Test-lvgl.elf"
-        },
-        {
-            "cwd": "${workspaceRoot}",
-            "name": "release Cortex-Debug STM32Black",
-            "BMPGDBSerialPort": "//./COM12",
-            "interface": "swd",
-            "type": "cortex-debug",
-            "request": "launch",
-            "servertype": "bmp",
-            "device": "STM32F407VE",
-            "executable": "./BUILD/STM32F407VE_BLACK/GCC_ARM-RELEASE/Test-lvgl.elf"
-        },
-        {
-            "cwd": "${workspaceRoot}",
-            "name": "develop Cortex-Debug STM32Black",
-            "BMPGDBSerialPort": "//./COM12",
-            "interface": "swd",
-            "type": "cortex-debug",
-            "request": "launch",
-            "servertype": "bmp",
-            "device": "STM32F407VE",
-            "executable": "./BUILD/STM32F407VE_BLACK/GCC_ARM-DEVELOP/Test-lvgl.elf"
         }
     ]
 }

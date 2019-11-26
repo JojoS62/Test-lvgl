@@ -3,6 +3,7 @@
     "C_Cpp.addWorkspaceRootToIncludePath": false,
     "files.associations": {
         "*.cpp": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "fonts.h": "c"
     }
 }

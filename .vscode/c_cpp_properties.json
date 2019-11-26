@@ -99,6 +99,7 @@
                 "${workspaceFolder}/libs/lvgl/src/lv_objx/*",
                 "${workspaceFolder}/libs/lvgl/src/lv_themes/*",
                 "${workspaceFolder}/libs/util/*",
+                "${workspaceFolder}/libs/Templates/*",
                 "${workspaceFolder}/mbed-os/*",
                 "${workspaceFolder}/mbed-os/cmsis/*",
                 "${workspaceFolder}/mbed-os/cmsis/TARGET_CORTEX_M/*",
