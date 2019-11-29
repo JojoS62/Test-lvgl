@@ -29,7 +29,7 @@
 
 class LVGLDispDISCO_F746NG : public LVGLDispDriver {
 public:
-    LVGLDispDISCO_F746NG(uint32_t nBufferRows = 40);
+    LVGLDispDISCO_F746NG(uint32_t nBufferRows = 272/4);
 
 private:
     uint32_t _nBufferRows;

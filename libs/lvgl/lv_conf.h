@@ -25,8 +25,8 @@
 #  define LV_VER_RES_MAX          (240)
 #  define LV_COLOR_DEPTH     16
 #elif defined(TARGET_DISCO_F746NG)
-#  define LV_HOR_RES_MAX          (800)
-#  define LV_VER_RES_MAX          (472)
+#  define LV_HOR_RES_MAX          (480)
+#  define LV_VER_RES_MAX          (272)
 #  define LV_COLOR_DEPTH     32
 #elif defined(TARGET_DISCO_F769NI)
 #  define LV_HOR_RES_MAX          (800)

@@ -33,7 +33,7 @@ TS_DISCO_F746NG ts;
 LVGLTouchDriverDISCO_F746NG::LVGLTouchDriverDISCO_F746NG(LVGLDispDriver *lvglDispDriver) :
     LVGLInputDriver(lvglDispDriver)
 {
-    ts.Init(800, 472);
+    ts.Init(480, 272);
 
     _indev_drv.type = LV_INDEV_TYPE_POINTER; // touchpad
     _indev_drv.read_cb = read;

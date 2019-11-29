@@ -31,6 +31,7 @@ class LVGLDispDriver {
 public:
     LVGLDispDriver();
     lv_disp_t* getLVDisp() { return _disp; };
+    lv_disp_drv_t* getLVDispDrv() { return &_disp_drv; };
 
     /** Return the default diplay device
      *

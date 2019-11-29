@@ -149,6 +149,7 @@ static void DrawChar(uint16_t Xpos, uint16_t Ypos, const uint8_t *c);
 static void FillTriangle(uint16_t x1, uint16_t x2, uint16_t x3, uint16_t y1, uint16_t y2, uint16_t y3);
 static void LL_FillBuffer(uint32_t LayerIndex, void *pDst, uint32_t xSize, uint32_t ySize, uint32_t OffLine, uint32_t ColorIndex);
 static void LL_ConvertLineToARGB8888(void * pSrc, void *pDst, uint32_t xSize, uint32_t ColorMode);
+static void LL_ConvertAreaToARGB8888(void *pSrc, void *pDst, uint32_t xSize, uint32_t ySize, uint32_t ColorMode);
 /**
   * @}
   */ 
@@ -1085,6 +1086,25 @@ void BSP_LCD_DrawBitmap(uint32_t Xpos, uint32_t Ypos, uint8_t *pbmp)
 }
 
 /**
+  * @brief  Draws a bitmap picture loaded in the internal Flash in ARGB888 format (32 bits per pixel).
+  * @param  Xpos: Bmp X position in the LCD
+  * @param  Ypos: Bmp Y position in the LCD
+  * @param  pbmp: Pointer to Bmp picture address in the internal Flash
+  * @retval None
+  */
+void BSP_LCD_TransferBitmap(uint32_t Xpos, uint32_t Ypos, uint32_t Width, uint32_t Height, uint32_t *pbmp)
+{
+  uint32_t address;
+  uint32_t input_color_mode = 0;
+  
+  /* Set the address */
+  address = hLtdcHandler.LayerCfg[ActiveLayer].FBStartAdress + (((BSP_LCD_GetXSize()*Ypos) + Xpos)*(4));
+
+  /* Pixel format conversion */
+  LL_ConvertAreaToARGB8888(pbmp, (uint32_t *)address, Width, Height, input_color_mode);
+}
+
+/**
   * @brief  Draws a full rectangle.
   * @param  Xpos: X position
   * @param  Ypos: Y position
@@ -1645,8 +1665,63 @@ static void LL_ConvertLineToARGB8888(void *pSrc, void *pDst, uint32_t xSize, uin
 }
 
 /**
+  * @brief  Converts a line to an ARGB8888 pixel format.
+  * @param  pSrc: Pointer to source buffer
+  * @param  pDst: Output color
+  * @param  xSize: Buffer width
+  * @param  ySize: Buffer width
+  * @param  ColorMode: Input color mode   
+  * @retval None
+  */
+static void LL_ConvertAreaToARGB8888(void *pSrc, void *pDst, uint32_t xSize, uint32_t ySize, uint32_t ColorMode)
+{    
+  /* Configure the DMA2D Mode, Color Mode and output offset */
+  hDma2dHandler.Init.Mode         = DMA2D_M2M_PFC;
+  hDma2dHandler.Init.ColorMode    = ColorMode;
+  hDma2dHandler.Init.OutputOffset = BSP_LCD_GetXSize() - xSize; 
+  
+  /* Foreground Configuration */
+  hDma2dHandler.LayerCfg[1].AlphaMode = DMA2D_REPLACE_ALPHA;
+  hDma2dHandler.LayerCfg[1].InputAlpha = 0xff;
+  hDma2dHandler.LayerCfg[1].InputColorMode = ColorMode;
+  hDma2dHandler.LayerCfg[1].InputOffset = 0;
+  
+  // Background
+  hDma2dHandler.LayerCfg[0].AlphaMode = DMA2D_NO_MODIF_ALPHA;
+  hDma2dHandler.LayerCfg[0].InputColorMode = DMA2D_INPUT_ARGB8888;
+  hDma2dHandler.LayerCfg[0].InputOffset = BSP_LCD_GetXSize() - xSize;  
+
+  hDma2dHandler.Instance = DMA2D; 
+  
+  /* DMA2D Initialization */
+  if(HAL_DMA2D_Init(&hDma2dHandler) == HAL_OK) 
+  {
+    if(HAL_DMA2D_ConfigLayer(&hDma2dHandler, 1) == HAL_OK) 
+    {
+#ifdef _USE_DMA2D_POLLING_      
+      if (HAL_DMA2D_Start(&hDma2dHandler, (uint32_t)pSrc, (uint32_t)pDst, xSize, ySize) == HAL_OK)
+      {
+        /* Polling For DMA transfer */  
+        HAL_DMA2D_PollForTransfer(&hDma2dHandler, 100);
+      }
+#else
+      if (HAL_DMA2D_Start_IT(&hDma2dHandler, (uint32_t)pSrc, (uint32_t)pDst, xSize, ySize) == HAL_OK)
+      {
+        // DMA Complete Interrupt should be prepared
+      }
+#endif
+    }
+  } 
+}
+
+/**
   * @}
   */
+
+void BSP_LCD_SetDMACpltCallback( void (*fn)(DMA2D_HandleTypeDef *hdma2d))
+{
+  hDma2dHandler.XferCpltCallback = fn;
+}
 
 /**
   * @}
