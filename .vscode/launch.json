@@ -19,7 +19,7 @@
         },
         {
             "cwd": "${workspaceRoot}",
-            "executable": "./BUILD/DISCO_F769NI/GCC_ARM-DEBUG/${workspaceFolderBasename}.elf",
+            "executable": "./BUILD/DISCO_F746NG/GCC_ARM-DEBUG/${workspaceFolderBasename}.elf",
             "name": "Debug via stutil",
             "request": "launch",
             "type": "cortex-debug",
@@ -29,10 +29,11 @@
         },
         {
             "cwd": "${workspaceRoot}",
-            "executable": "./BUILD/DISCO_F746NG/GCC_ARM-DEBUG/${workspaceFolderBasename}.elf",
+            "executable": "./BUILD/DISCO_F746NG/GCC_ARM-RELEASE/${workspaceFolderBasename}.elf",
             "name": "Debug via openocd",
             "request": "launch",
             "type": "cortex-debug",
+            "device": "STM32F746",
             "servertype": "openocd",
             "configFiles": [
                 "../scripts/interface/stlink-v2-1.cfg",
